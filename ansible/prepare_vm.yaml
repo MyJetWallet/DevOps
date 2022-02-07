@@ -85,28 +85,35 @@
         owner: "{{ usermod.user }}"
         group: "{{ usermod.user }}"
 
-    - name: Copy file with owner and permissions
+    - name: Copy monitoring/docker-compose.yml
       ansible.builtin.copy:
-        src: id_rsa
-        dest: "/home/{{ usermod.user }}/.ssh/id_rsa"
+        src: monitoring/docker-compose.yml
+        dest: "/home/{{ usermod.user }}/monitoring/docker-compose.yml"
         owner: "{{ usermod.user }}"
         group: "{{ usermod.user }}"
-        mode: '0600'
 
-    - name: Clone the code repository to the docroot.
-      git:
-        repo: "git@gitlab.com:monfex-devops/cadvisor.git"
-        dest: "/home/{{ usermod.user }}/monitoring/cadvisor"
-        accept_hostkey: yes
-        key_file: "/home/{{ usermod.user }}/.ssh/id_rsa"
-      become_user: "{{ usermod.user }}"
-      tags:
-        - gitlab
+#    - name: Copy file with owner and permissions
+#      ansible.builtin.copy:
+#        src: id_rsa
+#        dest: "/home/{{ usermod.user }}/.ssh/id_rsa"
+#        owner: "{{ usermod.user }}"
+#        group: "{{ usermod.user }}"
+#        mode: '0600'
+#
+#    - name: Clone the code repository to the docroot.
+#      git:
+#        repo: "git@gitlab.com:monfex-devops/cadvisor.git"
+#        dest: "/home/{{ usermod.user }}/monitoring/cadvisor"
+#        accept_hostkey: yes
+#        key_file: "/home/{{ usermod.user }}/.ssh/id_rsa"
+#      become_user: "{{ usermod.user }}"
+#      tags:
+#        - gitlab
 
     - name: start monitoring
       shell: docker-compose up -d
       args:
-        chdir: "/home/{{ usermod.user }}/monitoring/cadvisor/"
+        chdir: "/home/{{ usermod.user }}/monitoring/"
       tags:
         - cadvisor
 
