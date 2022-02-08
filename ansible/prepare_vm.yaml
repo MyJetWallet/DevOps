@@ -120,8 +120,5 @@
       shell: echo $(hostnamectl status | grep Static | awk {'print $3'})
       register: hostname
 
-    - set_fact:
-        psk={{ hostname.stdout }}
-
     - shell: echo '127.0.0.1 localhost {{ hostname.stdout }}' > /etc/hosts
       become: true
