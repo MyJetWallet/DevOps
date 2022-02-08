@@ -92,24 +92,6 @@
         owner: "{{ usermod.user }}"
         group: "{{ usermod.user }}"
 
-#    - name: Copy file with owner and permissions
-#      ansible.builtin.copy:
-#        src: id_rsa
-#        dest: "/home/{{ usermod.user }}/.ssh/id_rsa"
-#        owner: "{{ usermod.user }}"
-#        group: "{{ usermod.user }}"
-#        mode: '0600'
-#
-#    - name: Clone the code repository to the docroot.
-#      git:
-#        repo: "git@gitlab.com:monfex-devops/cadvisor.git"
-#        dest: "/home/{{ usermod.user }}/monitoring/cadvisor"
-#        accept_hostkey: yes
-#        key_file: "/home/{{ usermod.user }}/.ssh/id_rsa"
-#      become_user: "{{ usermod.user }}"
-#      tags:
-#        - gitlab
-
     - name: start monitoring
       shell: docker-compose up -d
       args:
@@ -133,3 +115,13 @@
         group: monfex
         mode: '0755'
       become: yes
+
+    - name: get a result specific to master_primary
+      shell: echo $(hostnamectl status | grep Static | awk {'print $3'})
+      register: hostname
+
+    - set_fact:
+        psk={{ hostname.stdout }}
+
+    - shell: echo '127.0.0.1 localhost {{ hostname.stdout }}' > /etc/hosts
+      become: true
