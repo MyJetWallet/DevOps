@@ -99,21 +99,27 @@
       tags:
         - cadvisor
 
-    - name: stop ubuntu dns
-      shell: systemctl disable systemd-resolved && systemctl mask systemd-resolved && systemctl stop systemd-resolved
+
+    - name: start ubuntu dns
+      shell: systemctl unmask systemd-resolved && systemctl enable systemd-resolved && systemctl start systemd-resolved
       become: yes
 
-    - name: unlink resolv
-      shell: unlink /etc/resolv.conf && touch /etc/resolv.conf
+    - name: rm resolv
+      shell: rm /etc/resolv.conf
       become: yes
 
     - name: dns servers
       ansible.builtin.copy:
-        src: resolv.conf
-        dest: /etc/resolv.conf
-        owner: monfex
-        group: monfex
-        mode: '0755'
+        src: resolved.conf
+        dest: /etc/systemd/resolved.conf
+      become: yes
+
+    - name: restart dns
+      shell: service systemd-resolved restart
+      become: yes
+
+    - name: symlink
+      shell: ln -s /run/systemd/resolve/stub-resolv.conf /etc/resolv.conf
       become: yes
 
     - name: get a result specific to master_primary
