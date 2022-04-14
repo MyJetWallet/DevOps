@@ -1,6 +1,6 @@
 ---
 - name: playbook for install packages
-  hosts: spot
+  hosts: education
   remote_user: monfex
   become: true
 
