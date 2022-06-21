@@ -1,3 +1,5 @@
+[stspot-prod-signers]
+stspot-prod-signers
 [stspot-uat-clickhouse]
 stspot-uat-clickhouse
 [stprod-candles-api]
@@ -5,3 +7,9 @@ stprod-candles-api
 [education]
 education-sb
 education-wp
+[pci-dss]
+stspot-pci-dss
+stspot-pci-dss-tech
+[runners]
+stspot-test-runner-01
+stspot-test-runner-02

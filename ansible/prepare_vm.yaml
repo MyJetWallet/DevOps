@@ -1,6 +1,6 @@
 ---
 - name: playbook for install packages
-  hosts: education
+  hosts: stspot-prod-signers
   remote_user: monfex
   become: true
 
