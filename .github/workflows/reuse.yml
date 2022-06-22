@@ -27,4 +27,4 @@ jobs:
     runs-on: ${{ needs.setup.outputs.runner }}
     steps:
       - run: echo "My runner is ${{ needs.setup.outputs.runner }}"
-      - run: echo ${{ github.event.inputs.test }}
+      - run: echo ${{ inputs.test }}
