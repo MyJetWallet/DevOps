@@ -6,7 +6,5 @@ on:
 jobs:
   call-workflow-passing-data:
     uses: MyJetWallet/DevOps/.github/workflows/reuse.yml@master
-    with:
-      username: ${{ secrets.PAT_USERNAME }}
     secrets:
       envPAT: ${{ secrets.PAT_TOKEN }}
