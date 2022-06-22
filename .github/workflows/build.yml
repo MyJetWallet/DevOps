@@ -17,11 +17,11 @@ on:
         required: true
       ST_DOCKER_USER:
         required: true
-      ST_DOCKER_PASSWORD
+      ST_DOCKER_PASSWORD:
         required: true
-      AZURE_CONTAINER_REGISTRY
+      AZURE_CONTAINER_REGISTRY:
         required: true
-      UAT_GIT_TOKEN
+      UAT_GIT_TOKEN:
         required: true
 
 jobs:
