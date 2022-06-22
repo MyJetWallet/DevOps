@@ -2,6 +2,7 @@ name: Release Service
 
 on:
   push:
+    tags: "2.*"
 
 jobs:
   call-workflow-passing-data:
