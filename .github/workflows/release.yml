@@ -1,8 +1,16 @@
 name: Release Service
 
 on:
-  push:
-    tags: "2.*"
+  workflow_dispatch:
+    inputs:
+      source:
+        description: 'Source of event'
+        required: false
+        default: 'No source specified'
+
+#on:
+#  push:
+#    tags: "2.*"
 
 jobs:
   build:
