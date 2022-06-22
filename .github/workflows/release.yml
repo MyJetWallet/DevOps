@@ -5,7 +5,7 @@ on:
 
 jobs:
   call-workflow-passing-data:
-    uses: MyJetWallet/DevOps/blob/master/.github/workflows/reuse.yml
+    uses: MyJetWallet/DevOps/blob/master/.github/workflows/reuse.yml@master
     with:
       username: pashka1990
     secrets:
