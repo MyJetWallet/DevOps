@@ -2,11 +2,6 @@ name: Release Service
 
 on:
   workflow_dispatch:
-    inputs:
-      source:
-        description: 'Source of event'
-        required: false
-        default: 'No source specified'
 
 #on:
 #  push:
