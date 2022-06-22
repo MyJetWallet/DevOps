@@ -1,9 +1,8 @@
 name: Release Service
 
 on:
-  workflow_dispatch:
-#  push:
-#    tags: "2.*"
+  push:
+    tags: "2.*"
 
 jobs:
   build:
