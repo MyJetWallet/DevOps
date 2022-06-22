@@ -1,0 +1,11 @@
+name: Test Service
+
+on:
+  workflow_dispatch:
+
+jobs:
+  job:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v2
+    - uses: ./.github/workflows/composite-action
