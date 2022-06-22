@@ -6,7 +6,10 @@ on:
       test:
         required: true
         type: string
-
+    secrets: 
+      UAT_GIT_TOKEN:
+        description: 'A secret PAT'
+        required: true
 jobs:
   setup:
     runs-on: ubuntu-latest
