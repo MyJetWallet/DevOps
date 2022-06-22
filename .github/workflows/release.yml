@@ -4,13 +4,22 @@ on:
   push:
 
 jobs:
-  build:
-
+  setup:
     runs-on: ubuntu-latest
-
+    outputs:
+      runner: ${{ steps.runner_id.outputs.runner }}
     steps:
-    - uses: actions/checkout@v2
-    - name: envs
-      run: |
-        echo ${GITHUB_REF#refs/tags/}
-        echo ${{ github.event.repository.private }}
+      - name: Check repo
+        id: runner_id
+        run: |
+          if [ ${{ github.event.repository.private }} == true ]; then
+            echo "::set-output name=runner::self-hosted"
+          else
+            echo "::set-output name=runner::ubuntu-latest"
+          fi
+
+  job1:
+    needs: [setup]
+    runs-on: ${{ needs.setup.outputs.runner }}
+    steps:
+      - run: echo "My runner is ${{ needs.setup.outputs.runner }}"
