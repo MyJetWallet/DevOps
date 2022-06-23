@@ -12,18 +12,17 @@ on:
       release_version:
         required: true
         type: string
-      container_registry:
+    secrets:
+      GITHUB_TOKEN:
         required: true
-        type: string
-      container_registry_user:
+      ST_DOCKER_USER:
         required: true
-        type: string
-      container_registry_password:
+      ST_DOCKER_PASSWORD:
         required: true
-        type: string
-      token:
+      AZURE_CONTAINER_REGISTRY:
         required: true
-        type: string
+      UAT_GIT_TOKEN:
+        required: true
 #     secrets:
 #       GITHUB_TOKEN:
 #         required: true
