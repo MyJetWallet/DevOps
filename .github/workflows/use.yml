@@ -27,3 +27,17 @@ jobs:
     runs-on: ${{ needs.setup.outputs.runner }}
     steps:
       - run: echo "My runner is ${{ needs.setup.outputs.runner }}"
+
+  job2:
+    needs: [setup]
+    runs-on:
+    steps:
+      - name: test with tag
+        if: startsWith(github.ref, 'refs/tags/')
+        run: echo "Hello tag ${{ github.ref }}"
+
+      - name: test without tag
+        if: !startsWith(github.ref, 'refs/tags/')
+        run: echo "Hello tag ${{ github.ref }}"
+
+
