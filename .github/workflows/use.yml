@@ -36,5 +36,5 @@ jobs:
         if: github.ref == 'refs/heads/master'
         run: echo 'push'
       - name: Deploy with Maven
-        - if: github.event_name == 'release' && github.event.action == 'created'
+        if: github.event_name == 'release' && github.event.action == 'created'
         run: echo "Deploying tag ${{ github.ref }}"
