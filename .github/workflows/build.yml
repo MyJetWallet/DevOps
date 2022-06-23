@@ -1,4 +1,4 @@
-name: BUILD
+name: BUILD UAT
 
 on:
   workflow_call:
@@ -28,6 +28,7 @@ jobs:
     runs-on: ubuntu-latest
     outputs:
       runner: ${{ steps.runner_id.outputs.runner }}
+
     steps:
       - name: Check repo
         id: runner_id
@@ -37,8 +38,8 @@ jobs:
           else
             echo "::set-output name=runner::ubuntu-latest"
           fi
-  build:
 
+  build:
     needs: [setup]
     runs-on: ${{ needs.setup.outputs.runner }}
 
@@ -51,7 +52,7 @@ jobs:
         dotnet-version: 6.0.*
         source-url: https://nuget.pkg.github.com/myjetwallet/index.json
       env:
-        NUGET_AUTH_TOKEN: ${{secrets.GITHUB_TOKEN}}  
+        NUGET_AUTH_TOKEN: ${{secrets.GITHUB_TOKEN}}
 
     - name: Get current time
       uses: MyJetTools/get-current-time@v2
@@ -60,15 +61,15 @@ jobs:
         format: YYYY-MM-DD HH:mm:ss
         utcOffset: "+00:00"
 
-    - name: Build
+    - name: Build microservice
       run: dotnet build --configuration Release /p:AssemblyVersion=${{ inputs.release_version }}
-    - name: Test
+
+    - name: Test microservice
       run: dotnet test --no-build --configuration Release
-    - name: ls
-      run: ls
 
     - name: Publish Service
       run: dotnet publish ./src/*${{ inputs.repository_name }}/*${{ inputs.repository_name }}.csproj --configuration Release /p:AssemblyVersion=${{ inputs.release_version }} --output ./publish-api
+
     - name: Check Service dir
       run: ls ./publish-api
 
@@ -88,11 +89,11 @@ jobs:
         tag_with_ref: true
         build_args: app_version=myjetwallet.${{ steps.string.outputs.lowercase }}:{{ inputs.release_version }},app_compilation_date=${{ steps.current-time.outputs.formattedTime }}
 
-  kubernetes_update_version:
+  k8s-deploy:
     needs: [setup, build]
     runs-on: ${{ needs.setup.outputs.runner }}
-    steps:
 
+    steps:
     - id: string
       uses: ASzc/change-string-case-action@v1
       with:
@@ -112,18 +113,18 @@ jobs:
         find . -type f -name "*.*ml" -exec sed -i -r $reg {} \;
         git config user.name github-actions
         git config user.email github-actions@github.com
-        if git status | grep -q modified; then git commit -a -m "Update version of service myjetwallet.${{ steps.string.outputs.lowercase }}" && git push;fi 
+        if git status | grep -q modified; then git commit -a -m "Update version of service myjetwallet.${{ steps.string.outputs.lowercase }}" && git push; fi
 
-  docker_update_version:
-    needs: [setup, build, kubernetes_update_version]
+  docker-deploy:
+    needs: [setup, build, k8s-deploy]
     runs-on: ${{ needs.setup.outputs.runner }}
+    
     steps:
-
     - id: string
       uses: ASzc/change-string-case-action@v1
       with:
         string: ${{ inputs.repository_name }}
-        
+
     - name: get uat docker yamls
       uses: actions/checkout@v2
       with:
@@ -138,4 +139,4 @@ jobs:
         find . -type f -name "*.*ml" -exec sed -i -r $reg {} \;
         git config user.name github-actions
         git config user.email github-actions@github.com
-        if git status | grep -q modified; then git commit -a -m "Update version of service myjetwallet.${{ steps.string.outputs.lowercase }}" && git push; fi 
+        if git status | grep -q modified; then git commit -a -m "Update version of service myjetwallet.${{ steps.string.outputs.lowercase }}" && git push; fi

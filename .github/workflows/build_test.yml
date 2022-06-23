@@ -30,6 +30,7 @@ jobs:
     runs-on: ubuntu-latest
     outputs:
       runner: ${{ steps.runner_id.outputs.runner }}
+
     steps:
       - name: Check repo
         id: runner_id
@@ -39,8 +40,8 @@ jobs:
           else
             echo "::set-output name=runner::ubuntu-latest"
           fi
-  build:
 
+  build:
     needs: [setup]
     runs-on: ${{ needs.setup.outputs.runner }}
 
@@ -53,7 +54,7 @@ jobs:
         dotnet-version: 6.0.*
         source-url: https://nuget.pkg.github.com/myjetwallet/index.json
       env:
-        NUGET_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}  
+        NUGET_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
     - name: Get current time
       uses: MyJetTools/get-current-time@v2
@@ -62,10 +63,10 @@ jobs:
         format: YYYY-MM-DD HH:mm:ss
         utcOffset: "+00:00"
 
-    - name: Build
+    - name: Build microservice
       run: dotnet build --configuration Release /p:AssemblyVersion=${{ inputs.release_version }}
 
-    - name: Test
+    - name: Test microservice
       run: dotnet test --no-build --configuration Release
 
     - name: Publish Service
@@ -78,7 +79,7 @@ jobs:
       uses: ASzc/change-string-case-action@v1
       with:
         string: ${{ inputs.repository_name }}
-        
+
     - name: Publish image azure
       uses: docker/build-push-action@v1
       with:
@@ -94,8 +95,8 @@ jobs:
   restart:
     runs-on: ${{ needs.setup.outputs.runner }}
     needs: [setup, build]
+    
     steps:
-
     - id: string
       uses: ASzc/change-string-case-action@v1
       with:
@@ -106,4 +107,4 @@ jobs:
       env:
         KUBE_CONFIG_DATA: ${{ secrets.KUBE_CONFIG_DATA__ST_TEST }}
         NAMESPACE: spot-services
-        IMAGE: ${{ steps.string.outputs.lowercase }}-test 
+        IMAGE: ${{ steps.string.outputs.lowercase }}-test
