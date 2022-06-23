@@ -11,18 +11,16 @@ on:
         type: string
       release_version:
         required: true
-        type: string            
-#     secrets:
-#       GITHUB_TOKEN:
-#         required: true
-#       ST_DOCKER_USER:
-#         required: true
-#       ST_DOCKER_PASSWORD:
-#         required: true
-#       AZURE_CONTAINER_REGISTRY:
-#         required: true
-#       UAT_GIT_TOKEN:
-#         required: true
+        type: string
+    secrets:
+      ST_DOCKER_USER:
+        required: true
+      ST_DOCKER_PASSWORD:
+        required: true
+      AZURE_CONTAINER_REGISTRY:
+        required: true
+      UAT_GIT_TOKEN:
+        required: true
 
 jobs:
 
@@ -88,7 +86,7 @@ jobs:
         registry: ${{ secrets.AZURE_CONTAINER_REGISTRY }}
         repository: spot/myjetwallet.${{ steps.string.outputs.lowercase }}
         tag_with_ref: true
-        build_args: app_version=myjetwallet.${{ steps.string.outputs.lowercase }}:${{ inputs.release_version }},app_compilation_date=${{ steps.current-time.outputs.formattedTime }}
+        build_args: app_version=myjetwallet.${{ steps.string.outputs.lowercase }}:${GITHUB_REF#refs/tags/},app_compilation_date=${{ steps.current-time.outputs.formattedTime }}
 
   kubernetes_update_version:
     needs: [setup, build]
