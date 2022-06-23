@@ -2,9 +2,10 @@ name: test flow
 
 on:
   push:
-  release:
-    types: [created]
-    tags: ['2.*']
+    branches:    
+      - master
+    tags:        
+      - 2.*
 
 jobs:
   setup:
