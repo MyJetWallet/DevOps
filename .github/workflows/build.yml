@@ -13,8 +13,6 @@ on:
         required: true
         type: string
     secrets:
-#       GITHUB_TOKEN:
-#         required: true
       ST_DOCKER_USER:
         required: true
       ST_DOCKER_PASSWORD:
@@ -23,17 +21,6 @@ on:
         required: true
       UAT_GIT_TOKEN:
         required: true
-#     secrets:
-#       GITHUB_TOKEN:
-#         required: true
-#       ST_DOCKER_USER:
-#         required: true
-#       ST_DOCKER_PASSWORD:
-#         required: true
-#       AZURE_CONTAINER_REGISTRY:
-#         required: true
-#       UAT_GIT_TOKEN:
-#         required: true
 
 jobs:
 
