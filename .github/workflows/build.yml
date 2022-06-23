@@ -93,13 +93,13 @@ jobs:
     - name: Publish image azure
       uses: docker/build-push-action@v1
       with:
-        username: ${{ inputs.container_registry_user }}
-        password: ${{ inputs.container_registry_password }}
+        username: ${{ secrets.ST_DOCKER_USER }}
+        password: ${{ secrets.ST_DOCKER_PASSWORD }}
         path: ./publish-api
-        registry: ${{ inputs.container_registry }}
+        registry: ${{ secrets.AZURE_CONTAINER_REGISTRY }}
         repository: spot/myjetwallet.${{ steps.string.outputs.lowercase }}
         tag_with_ref: true
-        build_args: app_version=myjetwallet.${{ steps.string.outputs.lowercase }}:${{ inputs.release_version }},app_compilation_date=${{ steps.current-time.outputs.formattedTime }}
+        build_args: app_version=myjetwallet.${{ steps.string.outputs.lowercase }}:${GITHUB_REF#refs/tags/},app_compilation_date=${{ steps.current-time.outputs.formattedTime }}
 
   kubernetes_update_version:
     needs: [setup, build]
@@ -116,7 +116,7 @@ jobs:
       with:
         repository: MyJetWallet/kubernates-infrastructure
         ref: uat
-        token: ${{ inputs.token }}
+        token: ${{ secrets.UAT_GIT_TOKEN }}
     - run: |
         pattern=myjetwallet.${{ steps.string.outputs.lowercase }}:.*$
         imagename=myjetwallet.${{ steps.string.outputs.lowercase }}:${{ inputs.release_version }}
@@ -142,7 +142,7 @@ jobs:
       with:
         repository: MyJetWallet/docker-infrastructure
         ref: uat
-        token: ${{ inputs.token }}
+        token: ${{ secrets.UAT_GIT_TOKEN }}
     - run: |
         pattern=myjetwallet.${{ steps.string.outputs.lowercase }}:.*$
         imagename=myjetwallet.${{ steps.string.outputs.lowercase }}:${{ inputs.release_version }}
