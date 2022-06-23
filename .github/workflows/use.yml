@@ -30,7 +30,7 @@ jobs:
 
   job2:
     needs: [setup]
-    runs-on:
+    runs-on: ${{ needs.setup.outputs.runner }}
     steps:
       - name: test with tag
         if: startsWith(github.ref, 'refs/tags/')
