@@ -11,7 +11,10 @@ on:
         type: string
       release_version:
         required: true
-        type: string            
+        type: string
+      container_registry:
+        required: true
+        type: string
 #     secrets:
 #       GITHUB_TOKEN:
 #         required: true
