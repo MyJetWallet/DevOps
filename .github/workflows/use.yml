@@ -32,9 +32,9 @@ jobs:
     needs: [setup]
     runs-on: ${{ needs.setup.outputs.runner }}
     steps:
-      - name: Build with Maven
-        if: github.ref == 'refs/heads/master'
-        run: echo 'push'
+#      - name: Build with Maven
+#        if: github.ref == 'refs/heads/master'
+#        run: echo 'push'
       - name: Deploy with Maven
         if: github.event_name == 'release' && github.event.action == 'created'
         run: echo "Deploying tag ${{ github.ref }}"
