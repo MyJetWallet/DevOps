@@ -1,15 +1,11 @@
-name: Release Service
+name: test flow
 
 on:
-  workflow_call:
-    inputs:
-      test:
-        required: true
-        type: string
-    secrets: 
-      UAT_GIT_TOKEN:
-        description: 'A secret PAT'
-        required: true
+  push:
+  release:
+    types: [created]
+    tags: ['2.*']
+
 jobs:
   setup:
     runs-on: ubuntu-latest
@@ -30,4 +26,3 @@ jobs:
     runs-on: ${{ needs.setup.outputs.runner }}
     steps:
       - run: echo "My runner is ${{ needs.setup.outputs.runner }}"
-      - run: echo ${{ inputs.test }}
