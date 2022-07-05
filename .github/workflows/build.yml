@@ -12,6 +12,9 @@ on:
       release_version:
         required: true
         type: string
+      csproj_file:
+        required: true
+        type: string
     secrets:
       ST_DOCKER_USER:
         required: true
