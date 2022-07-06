@@ -119,7 +119,7 @@ jobs:
         IMAGE: ${{ steps.string.outputs.lowercase }}-test
 
   candles-restart:
-    if: github.event.repository == 'Service.WalletApi.Candles'
+    if: inputs.repository_name == 'Service.WalletApi.Candles'
     runs-on: self-hosted
     needs: [build, restart]
     steps:
