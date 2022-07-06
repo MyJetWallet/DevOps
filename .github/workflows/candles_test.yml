@@ -1,0 +1,132 @@
+name: BUILD TEST
+
+on:
+  workflow_call:
+    inputs:
+      repository_name:
+        required: true
+        type: string
+      repository_type:
+        required: true
+        type: string
+      release_version:
+        required: true
+        type: string
+    secrets:
+      ST_DOCKER_USER:
+        required: true
+      ST_DOCKER_PASSWORD:
+        required: true
+      AZURE_CONTAINER_REGISTRY:
+        required: true
+      UAT_GIT_TOKEN:
+        required: true
+      KUBE_CONFIG_DATA__ST_TEST:
+        required: true
+      SSH_HOST:
+        required: false
+      SSH_PORT:
+        required: false
+      SSH_PRIVATE_KEY:
+        required: false
+      SSH_USER:
+        required: false
+
+jobs:
+
+  setup:
+    runs-on: ubuntu-latest
+    outputs:
+      runner: ${{ steps.runner_id.outputs.runner }}
+
+    steps:
+      - name: Check repo
+        id: runner_id
+        run: |
+          if [ ${{ inputs.repository_type }} == true ]; then
+            echo "::set-output name=runner::self-hosted"
+          else
+            echo "::set-output name=runner::ubuntu-latest"
+          fi
+
+  build:
+    needs: [setup]
+    runs-on: ${{ needs.setup.outputs.runner }}
+
+    steps:
+    - uses: actions/checkout@v2
+
+    - name: Setup .NET Core
+      uses: actions/setup-dotnet@v1
+      with:
+        dotnet-version: 6.0.*
+        source-url: https://nuget.pkg.github.com/myjetwallet/index.json
+      env:
+        NUGET_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+    - name: Get current time
+      uses: MyJetTools/get-current-time@v2
+      id: current-time
+      with:
+        format: YYYY-MM-DD HH:mm:ss
+        utcOffset: "+00:00"
+
+    - name: Build microservice
+      run: dotnet build --configuration Release /p:AssemblyVersion=${{ inputs.release_version }}
+
+    - name: Test microservice
+      run: dotnet test --no-build --configuration Release
+
+    - name: Publish Service
+      run: dotnet publish ./Backoffice/Backoffice.csproj --configuration Release /p:AssemblyVersion=${{ inputs.release_version }} --output ./publish-api
+
+    - name: Check Service dir
+      run: ls ./publish-api
+
+    - id: string
+      uses: ASzc/change-string-case-action@v1
+      with:
+        string: ${{ inputs.repository_name }}
+
+    - name: Publish image azure
+      uses: docker/build-push-action@v1
+      with:
+        username: ${{ secrets.ST_DOCKER_USER }}
+        password: ${{ secrets.ST_DOCKER_PASSWORD }}
+        path: ./publish-api
+        registry: ${{ secrets.AZURE_CONTAINER_REGISTRY }}
+        repository: spot/myjetwallet.${{ steps.string.outputs.lowercase }}-test
+        tags: latest
+        add_git_labels: true
+        build_args: app_version=myjetwallet.${{ steps.string.outputs.lowercase }}-test:latest,app_compilation_date=${{ steps.current-time.outputs.formattedTime }}
+
+  restart:
+    runs-on: ${{ needs.setup.outputs.runner }}
+    needs: [setup, build]
+    
+    steps:
+    - id: string
+      uses: ASzc/change-string-case-action@v1
+      with:
+        string: ${{ inputs.repository_name }}
+
+    - name: Restart service test
+      uses: MyJetWallet/k8s-restart-pods@master
+      env:
+        KUBE_CONFIG_DATA: ${{ secrets.KUBE_CONFIG_DATA__ST_TEST }}
+        NAMESPACE: spot-services
+        IMAGE: ${{ steps.string.outputs.lowercase }}-test
+
+  candles-restart:
+    if: inputs.repository_name == 'Service.WalletApi.Candles'
+    runs-on: self-hosted
+    needs: [build, restart]
+    steps:
+    - name: deploy to candles
+      uses: appleboy/ssh-action@master
+      with:
+        host: ${{ secrets.SSH_HOST }}
+        username: ${{ secrets.SSH_USER }}
+        key: ${{ secrets.SSH_PRIVATE_KEY }}
+        port: ${{ secrets.SSH_PORT }}
+        script: docker-compose -f /home/monfex/docker-infrastructure/candles-http/docker-compose.yml pull && docker-compose -f /home/monfex/docker-infrastructure/candles-http/docker-compose.yml up -d
