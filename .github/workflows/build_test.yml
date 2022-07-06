@@ -101,6 +101,7 @@ jobs:
         build_args: app_version=myjetwallet.${{ steps.string.outputs.lowercase }}-test:latest,app_compilation_date=${{ steps.current-time.outputs.formattedTime }}
 
   restart:
+    if: github.event.repository != 'Service.WalletApi.Candles'
     runs-on: ${{ needs.setup.outputs.runner }}
     needs: [setup, build]
     
