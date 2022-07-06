@@ -23,14 +23,6 @@ on:
         required: true
       KUBE_CONFIG_DATA__ST_TEST:
         required: true
-      SSH_HOST:
-        required: false
-      SSH_PORT:
-        required: false
-      SSH_PRIVATE_KEY:
-        required: false
-      SSH_USER:
-        required: false
 
 jobs:
 
@@ -116,17 +108,3 @@ jobs:
         KUBE_CONFIG_DATA: ${{ secrets.KUBE_CONFIG_DATA__ST_TEST }}
         NAMESPACE: spot-services
         IMAGE: ${{ steps.string.outputs.lowercase }}-test
-
-  candles-restart:
-    if: inputs.repository_name == 'Service.WalletApi.Candles'
-    runs-on: self-hosted
-    needs: [build, restart]
-    steps:
-    - name: deploy to candles
-      uses: appleboy/ssh-action@master
-      with:
-        host: ${{ secrets.SSH_HOST }}
-        username: ${{ secrets.SSH_USER }}
-        key: ${{ secrets.SSH_PRIVATE_KEY }}
-        port: ${{ secrets.SSH_PORT }}
-        script: docker-compose -f /home/monfex/docker-infrastructure/candles-http/docker-compose.yml pull && docker-compose -f /home/monfex/docker-infrastructure/candles-http/docker-compose.yml up -d
