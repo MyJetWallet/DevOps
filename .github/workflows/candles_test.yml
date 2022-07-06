@@ -21,8 +21,6 @@ on:
         required: true
       UAT_GIT_TOKEN:
         required: true
-      KUBE_CONFIG_DATA__ST_TEST:
-        required: true
       SSH_HOST:
         required: false
       SSH_PORT:
