@@ -23,14 +23,6 @@ on:
         required: true
       KUBE_CONFIG_DATA__ST_TEST:
         required: true
-      SSH_HOST:
-        required: false
-      SSH_PORT:
-        required: false
-      SSH_PRIVATE_KEY:
-        required: false
-      SSH_USER:
-        required: false
 
 jobs:
 
@@ -100,15 +92,19 @@ jobs:
         add_git_labels: true
         build_args: app_version=myjetwallet.${{ steps.string.outputs.lowercase }}-test:latest,app_compilation_date=${{ steps.current-time.outputs.formattedTime }}
 
-  candles-restart:
+  restart:
     runs-on: ${{ needs.setup.outputs.runner }}
-    needs: [build]
+    needs: [setup, build]
+    
     steps:
-    - name: deploy to candles
-      uses: appleboy/ssh-action@master
+    - id: string
+      uses: ASzc/change-string-case-action@v1
       with:
-        host: ${{ secrets.SSH_HOST }}
-        username: ${{ secrets.SSH_USER }}
-        key: ${{ secrets.SSH_PRIVATE_KEY }}
-        port: ${{ secrets.SSH_PORT }}
-        script: docker-compose -f /home/monfex/docker-infrastructure/candles-http/docker-compose.yml pull && docker-compose -f /home/monfex/docker-infrastructure/candles-http/docker-compose.yml up -d
+        string: ${{ inputs.repository_name }}
+
+    - name: Restart service test
+      uses: MyJetWallet/k8s-restart-pods@master
+      env:
+        KUBE_CONFIG_DATA: ${{ secrets.KUBE_CONFIG_DATA__ST_TEST }}
+        NAMESPACE: spot-services
+        IMAGE: ${{ steps.string.outputs.lowercase }}-test
