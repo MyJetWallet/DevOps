@@ -85,9 +85,9 @@ jobs:
         password: ${{ secrets.ST_DOCKER_PASSWORD }}
         path: ./publish-api
         registry: ${{ secrets.AZURE_CONTAINER_REGISTRY }}
-        repository: spot/myjetwallet.${{ steps.string.outputs.lowercase }}
+        repository: spot/${{ steps.string.outputs.lowercase }}
         tag_with_ref: true
-        build_args: app_version=myjetwallet.${{ steps.string.outputs.lowercase }}:{{ inputs.release_version }},app_compilation_date=${{ steps.current-time.outputs.formattedTime }}
+        build_args: app_version=${{ steps.string.outputs.lowercase }}:{{ inputs.release_version }},app_compilation_date=${{ steps.current-time.outputs.formattedTime }}
 
   k8s-deploy:
     needs: [setup, build]
@@ -106,8 +106,8 @@ jobs:
         ref: uat
         token: ${{ secrets.UAT_GIT_TOKEN }}
     - run: |
-        pattern=myjetwallet.${{ steps.string.outputs.lowercase }}:.*$
-        imagename=myjetwallet.${{ steps.string.outputs.lowercase }}:${{ inputs.release_version }}
+        pattern=${{ steps.string.outputs.lowercase }}:.*$
+        imagename=${{ steps.string.outputs.lowercase }}:${{ inputs.release_version }}
         reg=$"s/${pattern}/${imagename}/g"
         echo $reg
         find . -type f -name "*.*ml" -exec sed -i -r $reg {} \;
