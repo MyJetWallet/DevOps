@@ -12,9 +12,6 @@ on:
       release_version:
         required: true
         type: string
-      matrix_services:
-        required: true
-        type: string
     secrets:
       ST_DOCKER_USER:
         required: true
@@ -95,7 +92,7 @@ jobs:
   k8s-deploy:
     strategy:
       matrix:
-        version: ${{fromJson(inputs.matrix_services)}}
+        version: ${{ fromJson(["service.indexprices", "service.indexprices.job"]) }}
     needs: [setup, build]
     runs-on: ${{ needs.setup.outputs.runner }}
     steps:
@@ -123,7 +120,7 @@ jobs:
   docker-deploy:
     strategy:
       matrix:
-        version: ${{fromJson(inputs.matrix_services)}}
+        version: ${{ fromJson(["service.indexprices", "service.indexprices.job"]) }}
     needs: [setup, build, k8s-deploy]
     runs-on: ${{ needs.setup.outputs.runner }}
     steps:
