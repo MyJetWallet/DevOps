@@ -1,4 +1,4 @@
-name: BUILD UAT
+name: BUILD CANDLES UAT
 
 on:
   workflow_call:

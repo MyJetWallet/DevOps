@@ -1,4 +1,4 @@
-name: BUILD TEST
+name: BUILD BACKOFFICE TEST
 
 on:
   workflow_call:

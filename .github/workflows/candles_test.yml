@@ -1,4 +1,4 @@
-name: BUILD TEST
+name: BUILD CANDLES TEST
 
 on:
   workflow_call:
