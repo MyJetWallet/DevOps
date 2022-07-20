@@ -95,7 +95,7 @@ jobs:
   k8s-deploy:
     strategy:
       matrix:
-        version: ${{ inputs.matrix_services }}
+        version: ${{fromJson(inputs.matrix_services)}}
     needs: [setup, build]
     runs-on: ${{ needs.setup.outputs.runner }}
     steps:
@@ -123,7 +123,7 @@ jobs:
   docker-deploy:
     strategy:
       matrix:
-        version: ${{ inputs.matrix_services }}
+        version: ${{fromJson(inputs.matrix_services)}}
     needs: [setup, build, k8s-deploy]
     runs-on: ${{ needs.setup.outputs.runner }}
     steps:

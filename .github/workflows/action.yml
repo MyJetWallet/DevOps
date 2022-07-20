@@ -4,30 +4,14 @@ on:
   push:
 
 jobs:
-
-  setup:
-    runs-on: ubuntu-latest
-    outputs:
-      matrix: ${{ steps.matrix.outputs.value }}
-    steps:
-      - id: matrix
-        run: |
-          echo '::set-output name=value::[\"a\", \"b\", \"c\"]'
   build:
-    needs: [ setup ]
+
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        value: ${{ fromJson(steps.id.outputs.arr) }}
-    steps:
-      - run: |
-          echo "${{ matrix.value }}"
+        node-version: ${{fromJson(inputs.versions)}}
 
-#    - name: envs
-#      run: |
-#        echo ${{ steps.branches.outputs.value }}
-#        echo ${{ github.event.repository.name }}
-#        echo ${{ steps.string.outputs.lowercase }}
-#        echo ${GITHUB_REF#refs/tags/}
-#        echo ${REPO}
-#        echo "indexprices-${{ matrix.version }}"
+    steps:
+    - uses: actions/checkout@v2
+    - name: Use Node.js ${{ matrix.node-version }}
+      uses: actions/setup-node@v2
