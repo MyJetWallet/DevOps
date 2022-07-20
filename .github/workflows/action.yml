@@ -1,20 +1,33 @@
 name: Release Service
 
 on:
-  workflow_dispatch:
+  push:
 
 jobs:
-  example_matrix:
+
+  setup:
+    runs-on: ubuntu-latest
+    outputs:
+      matrix: ${{ steps.matrix.outputs.value }}
+    steps:
+      - id: matrix
+        run: |
+          echo '::set-output name=value::[\"a\", \"b\", \"c\"]'
+  build:
+    needs: [ setup ]
+    runs-on: ubuntu-latest
     strategy:
       matrix:
-        version: [10, 12, 14]
-    runs-on: ubuntu-latest
+        value: ${{fromJson(needs.setup.outputs.matrix)}}
     steps:
-    - name: envs
-      run: |
-        echo ${{ steps.branches.outputs.value }}
-        echo ${{ github.event.repository.name }}
-        echo ${{ steps.string.outputs.lowercase }}
-        echo ${GITHUB_REF#refs/tags/}
-        echo ${REPO}
-        echo "indexprices-${{ matrix.version }}"
+      - run: |
+          echo "${{ matrix.value }}"
+
+#    - name: envs
+#      run: |
+#        echo ${{ steps.branches.outputs.value }}
+#        echo ${{ github.event.repository.name }}
+#        echo ${{ steps.string.outputs.lowercase }}
+#        echo ${GITHUB_REF#refs/tags/}
+#        echo ${REPO}
+#        echo "indexprices-${{ matrix.version }}"
