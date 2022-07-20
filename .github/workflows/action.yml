@@ -1,0 +1,19 @@
+name: Release Service
+
+on:
+  push:
+
+jobs:
+  example_matrix:
+    strategy:
+      matrix:
+        version: [10, 12, 14]
+    steps:
+    - name: envs
+      run: |
+        echo ${{ steps.branches.outputs.value }}
+        echo ${{ github.event.repository.name }}
+        echo ${{ steps.string.outputs.lowercase }}
+        echo ${GITHUB_REF#refs/tags/}
+        echo ${REPO}
+        echo "indexprices-${{ matrix.version }}"
