@@ -18,10 +18,12 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        value: ${{ fromJson(needs.setup.outputs.matrix) }}
+        value: ${{ fromJson($OUTPUT) }}
     steps:
       - run: |
           echo "${{ matrix.value }}"
+    env:
+      OUTPUT: ${{ steps.id.outputs.arr }}
 
 #    - name: envs
 #      run: |
