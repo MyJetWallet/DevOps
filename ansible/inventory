@@ -12,4 +12,15 @@ stspot-pci-dss
 stspot-pci-dss-tech
 [runners]
 stspot-test-runner-01
-stspot-test-runner-02
+#stspot-test-runner-02
+
+[texas]
+
+stspot-prod-texas-nginx-01
+stspot-prod-texas-nginx-02
+stspot-prod-texas-api
+stspot-prod-texas-api-replica
+
+[texas-candles]
+stspot-prod-texas-candles
+stspot-prod-texas-candles-replica

@@ -1,6 +1,6 @@
 ---
 - name: playbook for install packages
-  hosts: stspot-prod-signers
+  hosts: texas-candles
   remote_user: monfex
   become: true
 
