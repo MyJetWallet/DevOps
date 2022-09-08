@@ -5,6 +5,7 @@ import requests, os, subprocess
 settings = (('page', '0'), ('per_page', '100'), ('type', 'all'))
 personal_user = 'user'  # personal account
 personal_token = 'token'  # generate from github
+directory = '/Users/admin/github'
 
 
 def get_all_repos(user, token, params):
@@ -17,7 +18,7 @@ def get_all_repos(user, token, params):
     return repos
 
 
-os.chdir('/Users/admin/github')
+os.chdir(directory)
 for ssh_url in get_all_repos(personal_user, personal_token, settings):
     try:
         subprocess.run('git clone %s' % ssh_url['ssh_url'], shell=True)
