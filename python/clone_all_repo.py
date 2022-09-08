@@ -2,6 +2,7 @@
 
 import requests, os, subprocess
 
+# page: 1-5
 settings = (('page', '0'), ('per_page', '100'), ('type', 'all'))
 personal_user = 'user'  # personal account
 personal_token = 'token'  # generate from github
