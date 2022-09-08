@@ -7,10 +7,11 @@ settings = (('page', '0'), ('per_page', '100'), ('type', 'all'))
 personal_user = 'user'  # personal account
 personal_token = 'token'  # generate from github
 directory = '/Users/admin/github'
+git_url = 'https://api.github.com/orgs/MyJetWallet/repos'
 
 
 def get_all_repos(user, token, params):
-    res = requests.get('https://api.github.com/orgs/MyJetWallet/repos', params=params, auth=(user, token))
+    res = requests.get(git_url, params=params, auth=(user, token))
     res.headers.get('link', None)
     repos = res.json()
     while 'next' in res.links.keys():
