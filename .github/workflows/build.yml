@@ -61,8 +61,18 @@ jobs:
         format: YYYY-MM-DD HH:mm:ss
         utcOffset: "+00:00"
 
+    - name: Restore
+      run: dotnet restore
+      continue-on-error: true
+      
+    - name: Fix packege
+      run: |
+        sed 's/\[6.0.0, 7.0.0)/\[6.0.0, 7.0.0\]/g' /home/runner/.nuget/packages/nswag.generation.aspnetcore/13.17.0/nswag.generation.aspnetcore.nuspec
+        cat /home/runner/.nuget/packages/nswag.generation.aspnetcore/13.17.0/nswag.generation.aspnetcore.nuspec
+      continue-on-error: true
+
     - name: Build microservice
-      run: dotnet build --configuration Release /p:AssemblyVersion=${{ inputs.release_version }}
+      run: dotnet build --no-restore --configuration Release /p:AssemblyVersion=${{ inputs.release_version }}
 
     - name: Test microservice
       run: dotnet test --no-build --configuration Release
