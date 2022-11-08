@@ -67,7 +67,7 @@ jobs:
       
     - name: Fix packege
       run: |
-        sed 's/\[6.0.0, 7.0.0)/\[6.0.0, 7.0.0\]/g' ~/.nuget/packages/nswag.generation.aspnetcore/13.17.0/nswag.generation.aspnetcore.nuspec
+        sed -i 's/\[6.0.0, 7.0.0)/[6.0.0, 7.0.0]/g' ~/.nuget/packages/nswag.generation.aspnetcore/13.17.0/nswag.generation.aspnetcore.nuspec
         cat ~/.nuget/packages/nswag.generation.aspnetcore/13.17.0/nswag.generation.aspnetcore.nuspec
       continue-on-error: true
 
