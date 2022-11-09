@@ -61,14 +61,24 @@ jobs:
         format: YYYY-MM-DD HH:mm:ss
         utcOffset: "+00:00"
 
+    - name: Restore
+      run: dotnet restore
+      continue-on-error: true
+      
+    - name: Fix packege
+      run: |
+        sed -i 's/\[6.0.0, 7.0.0)/[6.0.0, 7.0.0]/g' ~/.nuget/packages/nswag.generation.aspnetcore/13.17.0/nswag.generation.aspnetcore.nuspec
+        cat ~/.nuget/packages/nswag.generation.aspnetcore/13.17.0/nswag.generation.aspnetcore.nuspec
+      continue-on-error: true
+
     - name: Build microservice
-      run: dotnet build --configuration Release /p:AssemblyVersion=${{ inputs.release_version }}
+      run: dotnet build --no-restore --configuration Release /p:AssemblyVersion=${{ inputs.release_version }}
 
     - name: Test microservice
       run: dotnet test --no-build --configuration Release
 
     - name: Publish Service
-      run: dotnet publish ./Backoffice/Backoffice.csproj --configuration Release /p:AssemblyVersion=${{ inputs.release_version }} --output ./publish-api
+      run: dotnet publish ./src/*${{ inputs.repository_name }}/*${{ inputs.repository_name }}.csproj --configuration Release /p:AssemblyVersion=${{ inputs.release_version }} --output ./publish-api
 
     - name: Check Service dir
       run: ls ./publish-api
