@@ -24,24 +24,23 @@ on:
 
 jobs:
 
-  setup:
-    runs-on: ubuntu-latest
-    outputs:
-      runner: ${{ steps.runner_id.outputs.runner }}
+#   setup:
+#     runs-on: ubuntu-latest
+#     outputs:
+#       runner: ${{ steps.runner_id.outputs.runner }}
 
-    steps:
-      - name: Check repo
-        id: runner_id
-        run: |
-          if [ ${{ inputs.repository_type }} == true ]; then
-            echo "::set-output name=runner::self-hosted"
-          else
-            echo "::set-output name=runner::ubuntu-latest"
-          fi
+#     steps:
+#       - name: Check repo
+#         id: runner_id
+#         run: |
+#           if [ ${{ inputs.repository_type }} == true ]; then
+#             echo "::set-output name=runner::self-hosted"
+#           else
+#             echo "::set-output name=runner::ubuntu-latest"
+#           fi
 
   build:
-    needs: [setup]
-    runs-on: ${{ needs.setup.outputs.runner }}
+    runs-on: self-hosted
 
     steps:
     - uses: actions/checkout@v2
@@ -100,8 +99,8 @@ jobs:
         build_args: app_version=myjetwallet.${{ steps.string.outputs.lowercase }}:{{ inputs.release_version }},app_compilation_date=${{ steps.current-time.outputs.formattedTime }}
 
   k8s-deploy:
-    needs: [setup, build]
-    runs-on: ${{ needs.setup.outputs.runner }}
+    needs: [build]
+    runs-on: self-hosted
 
     steps:
     - id: string
@@ -126,8 +125,8 @@ jobs:
         if git status | grep -q modified; then git commit -a -m "Update version of service myjetwallet.${{ steps.string.outputs.lowercase }}" && git push; fi
 
   docker-deploy:
-    needs: [setup, build, k8s-deploy]
-    runs-on: ${{ needs.setup.outputs.runner }}
+    needs: [build, k8s-deploy]
+    runs-on: self-hosted
     
     steps:
     - id: string
