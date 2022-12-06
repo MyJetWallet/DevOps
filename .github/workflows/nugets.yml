@@ -1,4 +1,4 @@
-name: Update nuget
+name: Nuget update action
 
 on:
   workflow_call:
