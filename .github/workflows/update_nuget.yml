@@ -2,9 +2,6 @@ name: Update nuget
 
 on:
   workflow_call:
-    secrets:
-      UAT_GIT_TOKEN:
-        required: true
 
 jobs:
   build:
