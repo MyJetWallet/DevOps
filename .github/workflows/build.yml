@@ -21,7 +21,7 @@ on:
         required: true
       UAT_GIT_TOKEN:
         required: true
-
+        
 jobs:
   build:
     runs-on: self-hosted
