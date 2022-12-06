@@ -25,22 +25,6 @@ on:
         required: true
 
 jobs:
-
-#   setup:
-#     runs-on: self-hosted
-#     outputs:
-#       runner: ${{ steps.runner_id.outputs.runner }}
-
-#     steps:
-#       - name: Check repo
-#         id: runner_id
-#         run: |
-#           if [ ${{ inputs.repository_type }} == true ]; then
-#             echo "::set-output name=runner::self-hosted"
-#           else
-#             echo "::set-output name=runner::self-hosted"
-#           fi
-
   build:
     runs-on: self-hosted
 
