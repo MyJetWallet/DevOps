@@ -85,19 +85,19 @@ jobs:
         add_git_labels: true
         build_args: app_version=myjetwallet.${{ steps.string.outputs.lowercase }}-test:latest,app_compilation_date=${{ steps.current-time.outputs.formattedTime }}
 
-  restart:
-    runs-on: self-hosted
-    needs: [build]
+#   restart:
+#     runs-on: self-hosted
+#     needs: [build]
     
-    steps:
-    - id: string
-      uses: ASzc/change-string-case-action@v1
-      with:
-        string: ${{ inputs.repository_name }}
+#     steps:
+#     - id: string
+#       uses: ASzc/change-string-case-action@v1
+#       with:
+#         string: ${{ inputs.repository_name }}
 
-    - name: Restart service test
-      uses: MyJetWallet/k8s-restart-pods@master
-      env:
-        KUBE_CONFIG_DATA: ${{ secrets.KUBE_CONFIG_DATA__ST_TEST }}
-        NAMESPACE: spot-services
-        IMAGE: ${{ steps.string.outputs.lowercase }}-test
+#     - name: Restart service test
+#       uses: MyJetWallet/k8s-restart-pods@master
+#       env:
+#         KUBE_CONFIG_DATA: ${{ secrets.KUBE_CONFIG_DATA__ST_TEST }}
+#         NAMESPACE: spot-services
+#         IMAGE: ${{ steps.string.outputs.lowercase }}-test
