@@ -85,11 +85,11 @@ jobs:
     - name: Check Service dir
       run: ls ./publish-api
 
-    - name: Check Service dir
+    - name: Check Service dir ${{ inputs.repository_name_second }}
       run: ls ${{ inputs.repository_output_second }}
 
-    - name: Check Service dir
-      run: ls ${{ inputs.repository_output_thid }}
+    - name: Check Service dir ${{ inputs.repository_name_third }}
+      run: ls ${{ inputs.repository_output_third }}
 
     - id: string
       uses: ASzc/change-string-case-action@v1
