@@ -8,10 +8,10 @@ on:
         type: string
       repository_name_second:
         required: true
-        type: string 
+        type: string
       repository_name_third:
         required: true
-        type: string       
+        type: string
       repository_output_second:
         required: true
         type: string
