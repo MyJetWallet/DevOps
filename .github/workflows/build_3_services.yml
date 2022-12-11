@@ -79,7 +79,7 @@ jobs:
       run: dotnet publish ./src/*${{ inputs.repository_name_second }}/*${{ inputs.repository_name_second }}.csproj --configuration Release /p:AssemblyVersion=${{ inputs.release_version }} --output ${{ inputs.repository_output_second }}
 
     - name: Publish Service ${{ inputs.repository_name_third }}
-      run: dotnet publish ./src/*${{ inputs.repository_name_third }}/*${{ inputs.repository_name_third }}.csproj --configuration Release /p:AssemblyVersion=${{ inputs.release_version }} --output ${{ inputs.repository_output_thid }}
+      run: dotnet publish ./src/*${{ inputs.repository_name_third }}/*${{ inputs.repository_name_third }}.csproj --configuration Release /p:AssemblyVersion=${{ inputs.release_version }} --output ${{ inputs.repository_output_third }}
 
 
     - name: Check Service dir
