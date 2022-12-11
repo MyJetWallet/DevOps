@@ -37,6 +37,7 @@ on:
 jobs:
   build:
     runs-on: self-hosted
+    
     steps:
     - uses: actions/checkout@v2
 
@@ -48,196 +49,196 @@ jobs:
       env:
         NUGET_AUTH_TOKEN: ${{secrets.GITHUB_TOKEN}}
 
-    - name: Get current time
-      uses: MyJetTools/get-current-time@v2
-      id: current-time
-      with:
-        format: YYYY-MM-DD HH:mm:ss
-        utcOffset: "+00:00"
+#     - name: Get current time
+#       uses: MyJetTools/get-current-time@v2
+#       id: current-time
+#       with:
+#         format: YYYY-MM-DD HH:mm:ss
+#         utcOffset: "+00:00"
 
-    - name: Restore
-      run: dotnet restore
-      continue-on-error: true
+#     - name: Restore
+#       run: dotnet restore
+#       continue-on-error: true
       
-    - name: Fix packege
-      run: |
-        sed -i 's/\[6.0.0, 7.0.0)/[6.0.0, 7.0.0]/g' ~/.nuget/packages/nswag.generation.aspnetcore/13.17.0/nswag.generation.aspnetcore.nuspec
-        cat ~/.nuget/packages/nswag.generation.aspnetcore/13.17.0/nswag.generation.aspnetcore.nuspec
-      continue-on-error: true
+#     - name: Fix packege
+#       run: |
+#         sed -i 's/\[6.0.0, 7.0.0)/[6.0.0, 7.0.0]/g' ~/.nuget/packages/nswag.generation.aspnetcore/13.17.0/nswag.generation.aspnetcore.nuspec
+#         cat ~/.nuget/packages/nswag.generation.aspnetcore/13.17.0/nswag.generation.aspnetcore.nuspec
+#       continue-on-error: true
 
-    - name: Build microservice
-      run: dotnet build --no-restore --configuration Release /p:AssemblyVersion=${{ inputs.release_version }}
+#     - name: Build microservice
+#       run: dotnet build --no-restore --configuration Release /p:AssemblyVersion=${{ inputs.release_version }}
 
-    - name: Test microservice
-      run: dotnet test --no-build --configuration Release
+#     - name: Test microservice
+#       run: dotnet test --no-build --configuration Release
 
-    - name: Publish Service
-      run: dotnet publish ./src/*${{ inputs.repository_name }}/*${{ inputs.repository_name }}.csproj --configuration Release /p:AssemblyVersion=${{ inputs.release_version }} --output ./publish-api
+#     - name: Publish Service
+#       run: dotnet publish ./src/*${{ inputs.repository_name }}/*${{ inputs.repository_name }}.csproj --configuration Release /p:AssemblyVersion=${{ inputs.release_version }} --output ./publish-api
 
-    - name: Publish Service ${{ inputs.repository_name_second }}
-      run: dotnet publish ./src/*${{ inputs.repository_name_second }}/*${{ inputs.repository_name_second }}.csproj --configuration Release /p:AssemblyVersion=${{ inputs.release_version }} --output ${{ inputs.repository_output_second }}
+#     - name: Publish Service ${{ inputs.repository_name_second }}
+#       run: dotnet publish ./src/*${{ inputs.repository_name_second }}/*${{ inputs.repository_name_second }}.csproj --configuration Release /p:AssemblyVersion=${{ inputs.release_version }} --output ${{ inputs.repository_output_second }}
 
-    - name: Publish Service ${{ inputs.repository_name_third }}
-    run: dotnet publish ./src/*${{ inputs.repository_name_third }}/*${{ inputs.repository_name_third }}.csproj --configuration Release /p:AssemblyVersion=${{ inputs.release_version }} --output ${{ inputs.repository_output_thid }}
+#     - name: Publish Service ${{ inputs.repository_name_third }}
+#     run: dotnet publish ./src/*${{ inputs.repository_name_third }}/*${{ inputs.repository_name_third }}.csproj --configuration Release /p:AssemblyVersion=${{ inputs.release_version }} --output ${{ inputs.repository_output_thid }}
 
 
-    - name: Check Service dir
-      run: ls ./publish-api
+#     - name: Check Service dir
+#       run: ls ./publish-api
 
-    - name: Check Service dir
-      run: ls ${{ inputs.repository_output_second }}
+#     - name: Check Service dir
+#       run: ls ${{ inputs.repository_output_second }}
 
-    - name: Check Service dir
-      run: ls ${{ inputs.repository_output_thid }}
+#     - name: Check Service dir
+#       run: ls ${{ inputs.repository_output_thid }}
 
-    - id: string
-      uses: ASzc/change-string-case-action@v1
-      with:
-        string: ${{ inputs.repository_name }}
+#     - id: string
+#       uses: ASzc/change-string-case-action@v1
+#       with:
+#         string: ${{ inputs.repository_name }}
 
-    - id: string_second
-      uses: ASzc/change-string-case-action@v1
-      with:
-        string: ${{ inputs.repository_name_second }}
+#     - id: string_second
+#       uses: ASzc/change-string-case-action@v1
+#       with:
+#         string: ${{ inputs.repository_name_second }}
 
-    - id: string_third
-      uses: ASzc/change-string-case-action@v1
-      with:
-        string: ${{ inputs.repository_name_third }}
+#     - id: string_third
+#       uses: ASzc/change-string-case-action@v1
+#       with:
+#         string: ${{ inputs.repository_name_third }}
 
-    - name: Publish image azure
-      uses: docker/build-push-action@v1
-      with:
-        username: ${{ secrets.ST_DOCKER_USER }}
-        password: ${{ secrets.ST_DOCKER_PASSWORD }}
-        path: ./publish-api
-        registry: ${{ secrets.AZURE_CONTAINER_REGISTRY }}
-        repository: spot/myjetwallet.${{ steps.string.outputs.lowercase }}
-        tag_with_ref: true
-        build_args: app_version=myjetwallet.${{ steps.string.outputs.lowercase }}:{{ inputs.release_version }},app_compilation_date=${{ steps.current-time.outputs.formattedTime }}
+#     - name: Publish image azure
+#       uses: docker/build-push-action@v1
+#       with:
+#         username: ${{ secrets.ST_DOCKER_USER }}
+#         password: ${{ secrets.ST_DOCKER_PASSWORD }}
+#         path: ./publish-api
+#         registry: ${{ secrets.AZURE_CONTAINER_REGISTRY }}
+#         repository: spot/myjetwallet.${{ steps.string.outputs.lowercase }}
+#         tag_with_ref: true
+#         build_args: app_version=myjetwallet.${{ steps.string.outputs.lowercase }}:{{ inputs.release_version }},app_compilation_date=${{ steps.current-time.outputs.formattedTime }}
 
-    - name: Publish image azure ${{ inputs.repository_name_second }}
-      uses: docker/build-push-action@v1
-      with:
-        username: ${{ secrets.ST_DOCKER_USER }}
-        password: ${{ secrets.ST_DOCKER_PASSWORD }}
-        path: ./publish-api
-        registry: ${{ secrets.AZURE_CONTAINER_REGISTRY }}
-        repository: spot/myjetwallet.${{ steps.string_second.outputs.lowercase }}
-        tag_with_ref: true
-        build_args: app_version=myjetwallet.${{ steps.string_second.outputs.lowercase }}:{{ inputs.release_version }},app_compilation_date=${{ steps.current-time.outputs.formattedTime }}
+#     - name: Publish image azure ${{ inputs.repository_name_second }}
+#       uses: docker/build-push-action@v1
+#       with:
+#         username: ${{ secrets.ST_DOCKER_USER }}
+#         password: ${{ secrets.ST_DOCKER_PASSWORD }}
+#         path: ./publish-api
+#         registry: ${{ secrets.AZURE_CONTAINER_REGISTRY }}
+#         repository: spot/myjetwallet.${{ steps.string_second.outputs.lowercase }}
+#         tag_with_ref: true
+#         build_args: app_version=myjetwallet.${{ steps.string_second.outputs.lowercase }}:{{ inputs.release_version }},app_compilation_date=${{ steps.current-time.outputs.formattedTime }}
 
-    - name: Publish image azure ${{ inputs.repository_name_third }}
-      uses: docker/build-push-action@v1
-      with:
-        username: ${{ secrets.ST_DOCKER_USER }}
-        password: ${{ secrets.ST_DOCKER_PASSWORD }}
-        path: ./publish-api
-        registry: ${{ secrets.AZURE_CONTAINER_REGISTRY }}
-        repository: spot/myjetwallet.${{ steps.string_third.outputs.lowercase }}
-        tag_with_ref: true
-        build_args: app_version=myjetwallet.${{ steps.string_third.outputs.lowercase }}:{{ inputs.release_version }},app_compilation_date=${{ steps.current-time.outputs.formattedTime }}
+#     - name: Publish image azure ${{ inputs.repository_name_third }}
+#       uses: docker/build-push-action@v1
+#       with:
+#         username: ${{ secrets.ST_DOCKER_USER }}
+#         password: ${{ secrets.ST_DOCKER_PASSWORD }}
+#         path: ./publish-api
+#         registry: ${{ secrets.AZURE_CONTAINER_REGISTRY }}
+#         repository: spot/myjetwallet.${{ steps.string_third.outputs.lowercase }}
+#         tag_with_ref: true
+#         build_args: app_version=myjetwallet.${{ steps.string_third.outputs.lowercase }}:{{ inputs.release_version }},app_compilation_date=${{ steps.current-time.outputs.formattedTime }}
 
-  k8s-deploy:
-    needs: [build]
-    runs-on: self-hosted
+#   k8s-deploy:
+#     needs: [build]
+#     runs-on: self-hosted
 
-    steps:
-    - id: string
-      uses: ASzc/change-string-case-action@v1
-      with:
-        string: ${{ inputs.repository_name }}
+#     steps:
+#     - id: string
+#       uses: ASzc/change-string-case-action@v1
+#       with:
+#         string: ${{ inputs.repository_name }}
 
-    - id: string_second
-      uses: ASzc/change-string-case-action@v1
-      with:
-        string: ${{ inputs.repository_name_second }}
+#     - id: string_second
+#       uses: ASzc/change-string-case-action@v1
+#       with:
+#         string: ${{ inputs.repository_name_second }}
 
-    - id: string_third
-      uses: ASzc/change-string-case-action@v1
-      with:
-        string: ${{ inputs.repository_name_third }}
+#     - id: string_third
+#       uses: ASzc/change-string-case-action@v1
+#       with:
+#         string: ${{ inputs.repository_name_third }}
 
-    - name: get uat k8s yamls
-      uses: actions/checkout@v2
-      with:
-        repository: MyJetWallet/kubernates-infrastructure
-        ref: uat
-        token: ${{ secrets.UAT_GIT_TOKEN }}
-    - run: |
-        pattern=myjetwallet.${{ steps.string.outputs.lowercase }}:.*$
-        imagename=myjetwallet.${{ steps.string.outputs.lowercase }}:${{ inputs.release_version }}
-        reg=$"s/${pattern}/${imagename}/g"
-        echo $reg
-        find . -type f -name "*.*ml" -exec sed -i -r $reg {} \;
-        git config user.name github-actions
-        git config user.email github-actions@github.com
-        if git status | grep -q modified; then git commit -a -m "Update version of service myjetwallet.${{ steps.string.outputs.lowercase }}" && git push; fi
-        pattern=myjetwallet.${{ steps.string_second.outputs.lowercase }}:.*$
-        imagename=myjetwallet.${{ steps.string_second.outputs.lowercase }}:${{ inputs.release_version }}
-        reg=$"s/${pattern}/${imagename}/g"
-        echo $reg
-        find . -type f -name "*.*ml" -exec sed -i -r $reg {} \;
-        git config user.name github-actions
-        git config user.email github-actions@github.com
-        if git status | grep -q modified; then git commit -a -m "Update version of service myjetwallet.${{ steps.string_second.outputs.lowercase }}" && git push; fi
-        pattern=myjetwallet.${{ steps.string_third.outputs.lowercase }}:.*$
-        imagename=myjetwallet.${{ steps.string_third.outputs.lowercase }}:${{ inputs.release_version }}
-        reg=$"s/${pattern}/${imagename}/g"
-        echo $reg
-        find . -type f -name "*.*ml" -exec sed -i -r $reg {} \;
-        git config user.name github-actions
-        git config user.email github-actions@github.com
-        if git status | grep -q modified; then git commit -a -m "Update version of service myjetwallet.${{ steps.string_third.outputs.lowercase }}" && git push; fi
+#     - name: get uat k8s yamls
+#       uses: actions/checkout@v2
+#       with:
+#         repository: MyJetWallet/kubernates-infrastructure
+#         ref: uat
+#         token: ${{ secrets.UAT_GIT_TOKEN }}
+#     - run: |
+#         pattern=myjetwallet.${{ steps.string.outputs.lowercase }}:.*$
+#         imagename=myjetwallet.${{ steps.string.outputs.lowercase }}:${{ inputs.release_version }}
+#         reg=$"s/${pattern}/${imagename}/g"
+#         echo $reg
+#         find . -type f -name "*.*ml" -exec sed -i -r $reg {} \;
+#         git config user.name github-actions
+#         git config user.email github-actions@github.com
+#         if git status | grep -q modified; then git commit -a -m "Update version of service myjetwallet.${{ steps.string.outputs.lowercase }}" && git push; fi
+#         pattern=myjetwallet.${{ steps.string_second.outputs.lowercase }}:.*$
+#         imagename=myjetwallet.${{ steps.string_second.outputs.lowercase }}:${{ inputs.release_version }}
+#         reg=$"s/${pattern}/${imagename}/g"
+#         echo $reg
+#         find . -type f -name "*.*ml" -exec sed -i -r $reg {} \;
+#         git config user.name github-actions
+#         git config user.email github-actions@github.com
+#         if git status | grep -q modified; then git commit -a -m "Update version of service myjetwallet.${{ steps.string_second.outputs.lowercase }}" && git push; fi
+#         pattern=myjetwallet.${{ steps.string_third.outputs.lowercase }}:.*$
+#         imagename=myjetwallet.${{ steps.string_third.outputs.lowercase }}:${{ inputs.release_version }}
+#         reg=$"s/${pattern}/${imagename}/g"
+#         echo $reg
+#         find . -type f -name "*.*ml" -exec sed -i -r $reg {} \;
+#         git config user.name github-actions
+#         git config user.email github-actions@github.com
+#         if git status | grep -q modified; then git commit -a -m "Update version of service myjetwallet.${{ steps.string_third.outputs.lowercase }}" && git push; fi
 
-  docker-deploy:
-    needs: [build, k8s-deploy]
-    runs-on: self-hosted
+#   docker-deploy:
+#     needs: [build, k8s-deploy]
+#     runs-on: self-hosted
     
-    steps:
-    - id: string
-      uses: ASzc/change-string-case-action@v1
-      with:
-        string: ${{ inputs.repository_name }}
+#     steps:
+#     - id: string
+#       uses: ASzc/change-string-case-action@v1
+#       with:
+#         string: ${{ inputs.repository_name }}
 
-    - id: string_second
-      uses: ASzc/change-string-case-action@v1
-      with:
-        string: ${{ inputs.repository_name_second }}
+#     - id: string_second
+#       uses: ASzc/change-string-case-action@v1
+#       with:
+#         string: ${{ inputs.repository_name_second }}
 
-    - id: string_third
-      uses: ASzc/change-string-case-action@v1
-      with:
-        string: ${{ inputs.repository_name_third }}
+#     - id: string_third
+#       uses: ASzc/change-string-case-action@v1
+#       with:
+#         string: ${{ inputs.repository_name_third }}
 
-    - name: get uat docker yamls
-      uses: actions/checkout@v2
-      with:
-        repository: MyJetWallet/docker-infrastructure
-        ref: uat
-        token: ${{ secrets.UAT_GIT_TOKEN }}
-    - run: |
-        pattern=myjetwallet.${{ steps.string.outputs.lowercase }}:.*$
-        imagename=myjetwallet.${{ steps.string.outputs.lowercase }}:${{ inputs.release_version }}
-        reg=$"s/${pattern}/${imagename}/g"
-        echo $reg
-        find . -type f -name "*.*ml" -exec sed -i -r $reg {} \;
-        git config user.name github-actions
-        git config user.email github-actions@github.com
-        if git status | grep -q modified; then git commit -a -m "Update version of service myjetwallet.${{ steps.string.outputs.lowercase }}" && git push; fi
-        pattern=myjetwallet.${{ steps.string_second.outputs.lowercase }}:.*$
-        imagename=myjetwallet.${{ steps.string_second.outputs.lowercase }}:${{ inputs.release_version }}
-        reg=$"s/${pattern}/${imagename}/g"
-        echo $reg
-        find . -type f -name "*.*ml" -exec sed -i -r $reg {} \;
-        git config user.name github-actions
-        git config user.email github-actions@github.com
-        if git status | grep -q modified; then git commit -a -m "Update version of service myjetwallet.${{ steps.string_second.outputs.lowercase }}" && git push; fi
-        pattern=myjetwallet.${{ steps.string_third.outputs.lowercase }}:.*$
-        imagename=myjetwallet.${{ steps.string_third.outputs.lowercase }}:${{ inputs.release_version }}
-        reg=$"s/${pattern}/${imagename}/g"
-        echo $reg
-        find . -type f -name "*.*ml" -exec sed -i -r $reg {} \;
-        git config user.name github-actions
-        git config user.email github-actions@github.com
-        if git status | grep -q modified; then git commit -a -m "Update version of service myjetwallet.${{ steps.string_third.outputs.lowercase }}" && git push; fi
+#     - name: get uat docker yamls
+#       uses: actions/checkout@v2
+#       with:
+#         repository: MyJetWallet/docker-infrastructure
+#         ref: uat
+#         token: ${{ secrets.UAT_GIT_TOKEN }}
+#     - run: |
+#         pattern=myjetwallet.${{ steps.string.outputs.lowercase }}:.*$
+#         imagename=myjetwallet.${{ steps.string.outputs.lowercase }}:${{ inputs.release_version }}
+#         reg=$"s/${pattern}/${imagename}/g"
+#         echo $reg
+#         find . -type f -name "*.*ml" -exec sed -i -r $reg {} \;
+#         git config user.name github-actions
+#         git config user.email github-actions@github.com
+#         if git status | grep -q modified; then git commit -a -m "Update version of service myjetwallet.${{ steps.string.outputs.lowercase }}" && git push; fi
+#         pattern=myjetwallet.${{ steps.string_second.outputs.lowercase }}:.*$
+#         imagename=myjetwallet.${{ steps.string_second.outputs.lowercase }}:${{ inputs.release_version }}
+#         reg=$"s/${pattern}/${imagename}/g"
+#         echo $reg
+#         find . -type f -name "*.*ml" -exec sed -i -r $reg {} \;
+#         git config user.name github-actions
+#         git config user.email github-actions@github.com
+#         if git status | grep -q modified; then git commit -a -m "Update version of service myjetwallet.${{ steps.string_second.outputs.lowercase }}" && git push; fi
+#         pattern=myjetwallet.${{ steps.string_third.outputs.lowercase }}:.*$
+#         imagename=myjetwallet.${{ steps.string_third.outputs.lowercase }}:${{ inputs.release_version }}
+#         reg=$"s/${pattern}/${imagename}/g"
+#         echo $reg
+#         find . -type f -name "*.*ml" -exec sed -i -r $reg {} \;
+#         git config user.name github-actions
+#         git config user.email github-actions@github.com
+#         if git status | grep -q modified; then git commit -a -m "Update version of service myjetwallet.${{ steps.string_third.outputs.lowercase }}" && git push; fi
