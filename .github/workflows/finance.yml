@@ -83,7 +83,7 @@ jobs:
         build_args: app_version=myjetwallet.${{ steps.string.outputs.lowercase }}:{{ inputs.release_version }},app_compilation_date=${{ steps.current-time.outputs.formattedTime }}
 
   docker-deploy:
-    needs: [build, k8s-deploy]
+    needs: [build]
     runs-on: self-hosted
     
     steps:
@@ -99,8 +99,8 @@ jobs:
         ref: master
         token: ${{ secrets.UAT_GIT_TOKEN }}
     - run: |
-        pattern=${{ steps.string.outputs.lowercase }}:.*$
-        imagename=${{ steps.string.outputs.lowercase }}:${{ inputs.release_version }}
+        pattern=myjetwallet.${{ steps.string.outputs.lowercase }}:.*$
+        imagename=myjetwallet.${{ steps.string.outputs.lowercase }}:${{ inputs.release_version }}
         reg=$"s/${pattern}/${imagename}/g"
         echo $reg
         find . -type f -name "*.*ml" -exec sed -i -r $reg {} \;
