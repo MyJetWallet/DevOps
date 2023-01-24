@@ -113,3 +113,6 @@ jobs:
         name: ${{ github.repository }}
         branch: ${{ github.ref }}
         dir: './src/${{ inputs.repository_name }}'
+        
+    - name: ls
+      run: ls -la
