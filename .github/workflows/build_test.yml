@@ -112,4 +112,4 @@ jobs:
         owner: ${{ github.repository_owner }}
         name: ${{ github.repository }}
         branch: ${{ github.ref }}
-        dir: './src/{{ inputs.repository_name }}'
+        dir: ${{ './src/{{ inputs.repository_name }}' }}
