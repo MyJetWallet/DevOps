@@ -2,10 +2,10 @@ name: Nuget update action
 
 on:
   workflow_call:
-    inputs:
-      repository_name:
-        required: true
-        type: string
+#     inputs:
+#       repository_name:
+#         required: true
+#         type: string
 
 jobs:
   build:
@@ -54,7 +54,7 @@ jobs:
         owner: ${{ github.repository_owner }}
         name: ${{ github.repository }}
         branch: ${{ github.ref }}
-        dir: './src/${{ inputs.repository_name }}'
+        dir: './src/${{ github.repository.name }}'
         
     - name: Commit & Push changes
       uses: MyJetWallet/push@master
