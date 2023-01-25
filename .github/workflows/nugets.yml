@@ -2,10 +2,6 @@ name: Nuget update action
 
 on:
   workflow_call:
-#     inputs:
-#       repository_name:
-#         required: true
-#         type: string
 
 jobs:
   build:
@@ -60,4 +56,4 @@ jobs:
       uses: MyJetWallet/push@master
       with:
         github_token: ${{ secrets.GITHUB_TOKEN }}
-        message: auto-update nugets
+        message: auto-update nugets & analysis code metrics
