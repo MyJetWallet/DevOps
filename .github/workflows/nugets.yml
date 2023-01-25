@@ -2,6 +2,10 @@ name: Nuget update action
 
 on:
   workflow_call:
+    inputs:
+      repository_name:
+        required: true
+        type: string
 
 jobs:
   build:
@@ -43,7 +47,15 @@ jobs:
     - name: Test
       run: dotnet test --no-build --configuration Release
       
-      
+    - name: .NET code metrics
+      id: dotnet-code-metrics
+      uses: MyJetWallet/code-metrics@master
+      with:
+        owner: ${{ github.repository_owner }}
+        name: ${{ github.repository }}
+        branch: ${{ github.ref }}
+        dir: './src/${{ inputs.repository_name }}'
+        
     - name: Commit & Push changes
       uses: MyJetWallet/push@master
       with:
