@@ -85,34 +85,34 @@ jobs:
         add_git_labels: true
         build_args: app_version=myjetwallet.${{ steps.string.outputs.lowercase }}-test:latest,app_compilation_date=${{ steps.current-time.outputs.formattedTime }}
 
-  analysis:
-    needs: [build]
-    runs-on: self-hosted
-    permissions:
-      contents: write
-      pull-requests: write
-    outputs:
-      summary-title: 'summary title'
-      summary-details: 'summary details'
-      updated-metrics: 'updated metrics'
+#   analysis:
+#     needs: [build]
+#     runs-on: self-hosted
+#     permissions:
+#       contents: write
+#       pull-requests: write
+#     outputs:
+#       summary-title: 'summary title'
+#       summary-details: 'summary details'
+#       updated-metrics: 'updated metrics'
 
-    steps:
-    - uses: actions/checkout@v3
+#     steps:
+#     - uses: actions/checkout@v3
 
-    - name: Set output
-      run: |
-        echo "updated-metrics=updatedMetrics" >> $GITHUB_OUTPUT
-        echo "summary-title=title" >> $GITHUB_OUTPUT
-        echo "summary-details=summary" >> $GITHUB_OUTPUT
+#     - name: Set output
+#       run: |
+#         echo "updated-metrics=updatedMetrics" >> $GITHUB_OUTPUT
+#         echo "summary-title=title" >> $GITHUB_OUTPUT
+#         echo "summary-details=summary" >> $GITHUB_OUTPUT
 
-    - name: .NET code metrics
-      id: dotnet-code-metrics
-      uses: MyJetWallet/code-metrics@master
-      with:
-        owner: ${{ github.repository_owner }}
-        name: ${{ github.repository }}
-        branch: ${{ github.ref }}
-        dir: './src/${{ inputs.repository_name }}'
+#     - name: .NET code metrics
+#       id: dotnet-code-metrics
+#       uses: MyJetWallet/code-metrics@master
+#       with:
+#         owner: ${{ github.repository_owner }}
+#         name: ${{ github.repository }}
+#         branch: ${{ github.ref }}
+#         dir: './src/${{ inputs.repository_name }}'
         
 #     - name: Create pull request
 #       uses: peter-evans/create-pull-request@v4.2.3
