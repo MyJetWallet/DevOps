@@ -37,9 +37,6 @@ jobs:
       env:
         PATH: "$PATH:/home/monfex/.dotnet/tools"
 
-    - name: Build
-      run: dotnet build --configuration Release /p:AssemblyVersion=0.0.0
-
     - name: Test
       run: dotnet test --no-build --configuration Release
       
