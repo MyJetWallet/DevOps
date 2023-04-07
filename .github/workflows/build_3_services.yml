@@ -118,7 +118,7 @@ jobs:
       with:
         username: ${{ secrets.ST_DOCKER_USER }}
         password: ${{ secrets.ST_DOCKER_PASSWORD }}
-        path: ./publish-api
+        path: ${{ inputs.repository_output_second }}
         registry: ${{ secrets.AZURE_CONTAINER_REGISTRY }}
         repository: spot/myjetwallet.${{ steps.string_second.outputs.lowercase }}
         tag_with_ref: true
@@ -129,7 +129,7 @@ jobs:
       with:
         username: ${{ secrets.ST_DOCKER_USER }}
         password: ${{ secrets.ST_DOCKER_PASSWORD }}
-        path: ./publish-api
+        path: ${{ inputs.repository_output_third }}
         registry: ${{ secrets.AZURE_CONTAINER_REGISTRY }}
         repository: spot/myjetwallet.${{ steps.string_third.outputs.lowercase }}
         tag_with_ref: true
