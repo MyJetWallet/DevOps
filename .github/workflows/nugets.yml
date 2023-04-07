@@ -37,20 +37,20 @@ jobs:
     - name: Test
       run: dotnet test --no-build --configuration Release
       
-    - name: .NET code metrics
-      id: dotnet-code-metrics
-      uses: MyJetWallet/code-metrics@master
-      with:
-        owner: ${{ github.repository_owner }}
-        name: ${{ github.repository }}
-        branch: ${{ github.ref }}
-        dir: './src/${{ github.repository.name }}'
+#     - name: .NET code metrics
+#       id: dotnet-code-metrics
+#       uses: MyJetWallet/code-metrics@master
+#       with:
+#         owner: ${{ github.repository_owner }}
+#         name: ${{ github.repository }}
+#         branch: ${{ github.ref }}
+#         dir: './src/${{ github.repository.name }}'
         
-    - name: move code moetrics to root folder
-      run: mv src/CODE_METRICS.md .
+#     - name: move code moetrics to root folder
+#       run: mv src/CODE_METRICS.md .
        
-    - name: Commit & Push changes
-      uses: MyJetWallet/push@master
-      with:
-        github_token: ${{ secrets.GITHUB_TOKEN }}
-        message: auto-update nugets & analysis code metrics
+#     - name: Commit & Push changes
+#       uses: MyJetWallet/push@master
+#       with:
+#         github_token: ${{ secrets.GITHUB_TOKEN }}
+#         message: auto-update nugets & analysis code metrics
