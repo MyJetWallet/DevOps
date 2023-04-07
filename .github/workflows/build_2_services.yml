@@ -52,6 +52,10 @@ jobs:
         format: YYYY-MM-DD HH:mm:ss
         utcOffset: "+00:00"
 
+    - name: Restore
+      run: dotnet restore
+      continue-on-error: true
+
     - name: Build microservice
       run: dotnet build --no-restore --configuration Release /p:AssemblyVersion=${{ inputs.release_version }}
 
