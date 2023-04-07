@@ -1,3 +1,8 @@
+[runner]
+stspot-uat-runner-01
+[signalr]
+stspot-prod-signalr
+stspot-prod-signalr-replica
 [stspot-prod-signers]
 stspot-prod-signers
 [stspot-uat-clickhouse]
@@ -11,8 +16,8 @@ education-wp
 stspot-pci-dss
 stspot-pci-dss-tech
 [runners]
-stspot-test-runner-01
-#stspot-test-runner-02
+stspot-uat-runner-01
+stspot-uat-runner-02
 
 [texas]
 

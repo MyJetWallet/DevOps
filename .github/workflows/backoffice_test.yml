@@ -26,21 +26,6 @@ on:
 
 jobs:
 
-#   setup:
-#     runs-on: self-hosted
-#     outputs:
-#       runner: ${{ steps.runner_id.outputs.runner }}
-
-#     steps:
-#       - name: Check repo
-#         id: runner_id
-#         run: |
-#           if [ ${{ inputs.repository_type }} == true ]; then
-#             echo "::set-output name=runner::self-hosted"
-#           else
-#             echo "::set-output name=runner::self-hosted"
-#           fi
-
   build:
     runs-on: self-hosted
     env:
@@ -52,7 +37,7 @@ jobs:
     - name: Setup .NET Core
       uses: actions/setup-dotnet@v3
       with:
-        dotnet-version: 6.0.*
+        dotnet-version: 7.0.*
         source-url: https://nuget.pkg.github.com/myjetwallet/index.json
       env:
         NUGET_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -64,10 +49,8 @@ jobs:
         format: YYYY-MM-DD HH:mm:ss
         utcOffset: "+00:00"
 
-    - name: Fix packege
-      run: |
-        sed -i 's/\[6.0.0, 7.0.0)/[6.0.0, 7.0.0]/g' ~/.nuget/packages/nswag.generation.aspnetcore/13.17.0/nswag.generation.aspnetcore.nuspec
-        cat ~/.nuget/packages/nswag.generation.aspnetcore/13.17.0/nswag.generation.aspnetcore.nuspec
+    - name: Restore
+      run: dotnet restore
       continue-on-error: true
 
     - name: Build microservice
