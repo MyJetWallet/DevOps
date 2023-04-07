@@ -1,6 +1,6 @@
 ---
 - name: playbook for install packages
-  hosts: signalr
+  hosts: runner
   remote_user: monfex
   become: true
 
@@ -98,33 +98,3 @@
         chdir: "/home/{{ usermod.user }}/monitoring/"
       tags:
         - cadvisor
-
-
-    - name: start ubuntu dns
-      shell: systemctl unmask systemd-resolved && systemctl enable systemd-resolved && systemctl start systemd-resolved
-      become: yes
-
-    - name: rm resolv
-      shell: rm /etc/resolv.conf
-      become: yes
-
-    - name: dns servers
-      ansible.builtin.copy:
-        src: resolved.conf
-        dest: /etc/systemd/resolved.conf
-      become: yes
-
-    - name: restart dns
-      shell: service systemd-resolved restart
-      become: yes
-
-    - name: symlink
-      shell: ln -s /run/systemd/resolve/stub-resolv.conf /etc/resolv.conf
-      become: yes
-
-    - name: get a result specific to master_primary
-      shell: echo $(hostnamectl status | grep Static | awk {'print $3'})
-      register: hostname
-
-    - shell: echo '127.0.0.1 localhost {{ hostname.stdout }}' > /etc/hosts
-      become: true
