@@ -49,8 +49,8 @@ jobs:
 #     - name: move code moetrics to root folder
 #       run: mv src/CODE_METRICS.md .
        
-#     - name: Commit & Push changes
-#       uses: MyJetWallet/push@master
-#       with:
-#         github_token: ${{ secrets.GITHUB_TOKEN }}
-#         message: auto-update nugets & analysis code metrics
+    - name: Commit & Push changes
+      uses: MyJetWallet/push@master
+      with:
+        github_token: ${{ secrets.GITHUB_TOKEN }}
+        message: auto-update nugets & analysis code metrics
