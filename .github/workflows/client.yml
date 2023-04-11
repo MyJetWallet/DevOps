@@ -17,6 +17,8 @@ jobs:
   build:
 
     runs-on: self-hosted
+    env:
+      DOTNET_INSTALL_DIR: "/home/monfex"
 
     steps:
     - uses: actions/checkout@v3
