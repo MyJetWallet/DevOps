@@ -1,0 +1,35 @@
+name: telegram message
+
+on:
+  workflow_call:
+    inputs:
+      conclusion:
+        required: true
+        type: string      
+      repository:
+        required: true
+        type: string
+      workflow:
+        required: true
+        type: string
+    secrets:
+      TELEGRAM_TO:
+        required: true
+      TELEGRAM_TOKEN:
+        required: true
+        
+jobs:
+  build:
+    name: Build
+    if: ${{ inputs.conclusion == 'failure' }}
+    runs-on: self-hosted    
+    steps:
+    - uses: actions/checkout@master
+
+    - name: send custom message with args
+      uses: appleboy/telegram-action@master
+      with:
+        to: ${{ secrets.TELEGRAM_TO }}
+        token: ${{ secrets.TELEGRAM_TOKEN }}
+        args: Repository https://github.com/${{ inputs.repository }}/actions, action finished with error. (${{ inputs.workflow }})
+        
