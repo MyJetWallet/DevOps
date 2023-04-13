@@ -5,7 +5,7 @@ on:
 
 jobs:
   build:
-    runs-on: self-hosted
+    runs-on: nuget-runner
     env:
       DOTNET_INSTALL_DIR: "/home/monfex"
     steps:
