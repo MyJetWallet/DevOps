@@ -15,13 +15,8 @@ jobs:
     - name: Setup .NET Core
       uses: actions/setup-dotnet@v3
       with:
-        dotnet-version: 6.0.*
+        dotnet-version: 7.0.*
     
-    - name: Setup .NET Core 5
-      uses: actions/setup-dotnet@v3
-      with:
-        dotnet-version: 5.0.101
-      
     - name: install dotnet-outdated-tool
       run: dotnet tool install --global dotnet-outdated-tool || echo "success"
       
@@ -42,17 +37,17 @@ jobs:
     - name: Test
       run: dotnet test --no-build --configuration Release
       
-    - name: .NET code metrics
-      id: dotnet-code-metrics
-      uses: MyJetWallet/code-metrics@master
-      with:
-        owner: ${{ github.repository_owner }}
-        name: ${{ github.repository }}
-        branch: ${{ github.ref }}
-        dir: './src/${{ github.repository.name }}'
+#     - name: .NET code metrics
+#       id: dotnet-code-metrics
+#       uses: MyJetWallet/code-metrics@master
+#       with:
+#         owner: ${{ github.repository_owner }}
+#         name: ${{ github.repository }}
+#         branch: ${{ github.ref }}
+#         dir: './src/${{ github.repository.name }}'
         
-    - name: move code moetrics to root folder
-      run: mv src/CODE_METRICS.md .
+#     - name: move code moetrics to root folder
+#       run: mv src/CODE_METRICS.md .
        
     - name: Commit & Push changes
       uses: MyJetWallet/push@master
