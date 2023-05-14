@@ -1,6 +1,6 @@
 ---
 - name: playbook for install packages
-  hosts: signalr
+  hosts: node
   remote_user: monfex
   become: true
 

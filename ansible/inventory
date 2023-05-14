@@ -1,3 +1,5 @@
+[node]
+stspot-uat-lightning
 [runners]
 stspot-uat-runner-01
 #spot-uat-runner-02

@@ -23,7 +23,9 @@ def get_all_repos(user, token, params):
 os.chdir(directory)
 for ssh_url in get_all_repos(personal_user, personal_token, settings):
     try:
+        
         subprocess.run('git clone %s' % ssh_url['ssh_url'], shell=True)
     except:
         continue
 
+Добрий вечір. На жаль рівень англійської не відповідає вимогам пропозиції, але вакансія цікава. Поки навчаюсь з репетитором на рівні А2.
