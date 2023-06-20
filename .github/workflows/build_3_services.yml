@@ -169,7 +169,6 @@ jobs:
         find . -type f -name "*.*ml" -exec sed -i -r $reg {} \;
         git config user.name github-actions
         git config user.email github-actions@github.com
-        if git status | grep -q modified; then git commit -a -m "Update version of service myjetwallet.${{ steps.string.outputs.lowercase }}" && git push; fi
         pattern=myjetwallet.${{ steps.string_second.outputs.lowercase }}:.*$
         imagename=myjetwallet.${{ steps.string_second.outputs.lowercase }}:${{ inputs.release_version }}
         reg=$"s/${pattern}/${imagename}/g"
@@ -177,7 +176,6 @@ jobs:
         find . -type f -name "*.*ml" -exec sed -i -r $reg {} \;
         git config user.name github-actions
         git config user.email github-actions@github.com
-        if git status | grep -q modified; then git commit -a -m "Update version of service myjetwallet.${{ steps.string_second.outputs.lowercase }}" && git push; fi
         pattern=myjetwallet.${{ steps.string_third.outputs.lowercase }}:.*$
         imagename=myjetwallet.${{ steps.string_third.outputs.lowercase }}:${{ inputs.release_version }}
         reg=$"s/${pattern}/${imagename}/g"
@@ -185,56 +183,4 @@ jobs:
         find . -type f -name "*.*ml" -exec sed -i -r $reg {} \;
         git config user.name github-actions
         git config user.email github-actions@github.com
-        if git status | grep -q modified; then git commit -a -m "Update version of service myjetwallet.${{ steps.string_third.outputs.lowercase }}" && git push; fi
-
-  docker-deploy:
-    needs: [build, k8s-deploy]
-    runs-on: self-hosted
-    
-    steps:
-    - id: string
-      uses: ASzc/change-string-case-action@v1
-      with:
-        string: ${{ inputs.repository_name }}
-
-    - id: string_second
-      uses: ASzc/change-string-case-action@v1
-      with:
-        string: ${{ inputs.repository_name_second }}
-
-    - id: string_third
-      uses: ASzc/change-string-case-action@v1
-      with:
-        string: ${{ inputs.repository_name_third }}
-
-    - name: get uat docker yamls
-      uses: actions/checkout@v2
-      with:
-        repository: MyJetWallet/docker-infrastructure
-        ref: uat
-        token: ${{ secrets.UAT_GIT_TOKEN }}
-    - run: |
-        pattern=myjetwallet.${{ steps.string.outputs.lowercase }}:.*$
-        imagename=myjetwallet.${{ steps.string.outputs.lowercase }}:${{ inputs.release_version }}
-        reg=$"s/${pattern}/${imagename}/g"
-        echo $reg
-        find . -type f -name "*.*ml" -exec sed -i -r $reg {} \;
-        git config user.name github-actions
-        git config user.email github-actions@github.com
-        if git status | grep -q modified; then git commit -a -m "Update version of service myjetwallet.${{ steps.string.outputs.lowercase }}" && git push; fi
-        pattern=myjetwallet.${{ steps.string_second.outputs.lowercase }}:.*$
-        imagename=myjetwallet.${{ steps.string_second.outputs.lowercase }}:${{ inputs.release_version }}
-        reg=$"s/${pattern}/${imagename}/g"
-        echo $reg
-        find . -type f -name "*.*ml" -exec sed -i -r $reg {} \;
-        git config user.name github-actions
-        git config user.email github-actions@github.com
-        if git status | grep -q modified; then git commit -a -m "Update version of service myjetwallet.${{ steps.string_second.outputs.lowercase }}" && git push; fi
-        pattern=myjetwallet.${{ steps.string_third.outputs.lowercase }}:.*$
-        imagename=myjetwallet.${{ steps.string_third.outputs.lowercase }}:${{ inputs.release_version }}
-        reg=$"s/${pattern}/${imagename}/g"
-        echo $reg
-        find . -type f -name "*.*ml" -exec sed -i -r $reg {} \;
-        git config user.name github-actions
-        git config user.email github-actions@github.com
-        if git status | grep -q modified; then git commit -a -m "Update version of service myjetwallet.${{ steps.string_third.outputs.lowercase }}" && git push; fi
+        if git status | grep -q modified; then git commit -a -m "Update version of service ${{ steps.string.outputs.lowercase }}/${{ steps.string_second.outputs.lowercase }}/${{ steps.string_third.outputs.lowercase }}" && git push; fi
