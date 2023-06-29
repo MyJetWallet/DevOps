@@ -24,7 +24,7 @@ on:
         
 jobs:
   build:
-    runs-on: self-hosted
+    runs-on: ubuntu-latest
     env:
       DOTNET_INSTALL_DIR: "/home/monfex"
 
@@ -80,7 +80,7 @@ jobs:
 
   k8s-deploy:
     needs: [build]
-    runs-on: self-hosted
+    runs-on: ubuntu-latest
 
     steps:
     - id: string
@@ -106,7 +106,7 @@ jobs:
 
   docker-deploy:
     needs: [build, k8s-deploy]
-    runs-on: self-hosted
+    runs-on: ubuntu-latest
     
     steps:
     - id: string
