@@ -50,8 +50,8 @@ jobs:
         format: YYYY-MM-DD HH:mm:ss
         utcOffset: "+00:00"
         
-    - name: Login to GitHub NuGet Registry
-      run: dotnet nuget add source https://nuget.pkg.github.com/myjetwallet/index.json --name github --username ${{ secrets.NUGET_AUTH_USER }} --password ${{ secrets.NUGET_AUTH_TOKEN }} --store-password-in-clear-text
+#     - name: Login to GitHub NuGet Registry
+#       run: dotnet nuget add source https://nuget.pkg.github.com/myjetwallet/index.json --name github --username ${{ secrets.NUGET_AUTH_USER }} --password ${{ secrets.NUGET_AUTH_TOKEN }} --store-password-in-clear-text
       
         
 
