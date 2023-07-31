@@ -25,8 +25,6 @@ on:
         required: true
       NUGET_AUTH_TOKEN:
         required: true
-      NUGET_AUTH_USER:
-        required: true
 
 jobs:
   build:
@@ -41,9 +39,9 @@ jobs:
       uses: actions/setup-dotnet@v3
       with:
         dotnet-version: 7.0.*
-#         source-url: https://nuget.pkg.github.com/myjetwallet/index.json
-#       env:
-#         NUGET_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        source-url: https://nuget.pkg.github.com/myjetwallet/index.json
+      env:
+        NUGET_AUTH_TOKEN: ${{ secrets.NUGET_AUTH_TOKEN }}
 
     - name: Get current time
       uses: MyJetTools/get-current-time@v2
@@ -52,20 +50,9 @@ jobs:
         format: YYYY-MM-DD HH:mm:ss
         utcOffset: "+00:00"
 
-    - name: remove nugets myjetwallet
-      run: dotnet nuget remove source myjetwallet
-      continue-on-error: true
-    - name: remove nugets nuget.org
-      run: dotnet nuget remove source nuget.org
-      continue-on-error: true
-    - name: add nugets
-      run: dotnet nuget add source --name myjetwallet https://nuget.pkg.github.com/myjetwallet/index.json
-      continue-on-error: true
-    - name: add nugets nugets.org
-      run: dotnet nuget add source --name nuget.org https://api.nuget.org/v3/index.json
-      continue-on-error: true
     - name: list nugets
       run: dotnet nuget list source
+      
     - name: Restore
       run: dotnet restore
       continue-on-error: true
