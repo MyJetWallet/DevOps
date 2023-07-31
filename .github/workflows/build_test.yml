@@ -48,10 +48,19 @@ jobs:
         format: YYYY-MM-DD HH:mm:ss
         utcOffset: "+00:00"
 
-    - name: remove nugets
+    - name: Check if source exists
+      id: check_source
+      run: |
+        output=$(dotnet nuget list source | grep -c "myjetwallet")
+        echo "::set-output name=source_exists::${output}"
+
+    - name: Remove nuget source if exists
+      if: steps.check_source.outputs.source_exists > 0
       run: dotnet nuget remove source myjetwallet
-    - name: add nugets
-      run: dotnet nuget add  source  --name myjetwallet https://nuget.pkg.github.com/myjetwallet/index.json
+
+    - name: Add nuget source
+      run: dotnet nuget add source --name myjetwallet https://nuget.pkg.github.com/myjetwallet/index.json
+        
     - name: list nugets
       run: dotnet nuget list source
     - name: Restore
