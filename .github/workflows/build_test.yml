@@ -23,6 +23,10 @@ on:
         required: true
       KUBE_CONFIG_DATA__ST_TEST:
         required: true
+      NUGET_AUTH_TOKEN:
+        required: true
+      NUGET_AUTH_USER:
+        required: true
 
 jobs:
   build:
