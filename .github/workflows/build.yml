@@ -48,19 +48,19 @@ jobs:
         
 
     - name: remove nugets myjetwallet
-      run: ./dotnet nuget remove source myjetwallet
+      run: dotnet nuget remove source myjetwallet
       continue-on-error: true
     - name: remove nugets nuget.org
-      run: ./dotnet nuget remove source nuget.org
+      run: dotnet nuget remove source nuget.org
       continue-on-error: true
     - name: add nugets
-      run: ./dotnet nuget add source --name myjetwallet https://nuget.pkg.github.com/myjetwallet/index.json
+      run: dotnet nuget add source --name myjetwallet https://nuget.pkg.github.com/myjetwallet/index.json
       continue-on-error: true
     - name: add nugets nuget.org
-      run: ./dotnet nuget add source  --name nuget.org https://api.nuget.org/v3/index.json
+      run: dotnet nuget add source  --name nuget.org https://api.nuget.org/v3/index.json
       continue-on-error: true
     - name: list nugets
-      run: ./dotnet nuget list source
+      run: dotnet nuget list source
       continue-on-error: true
     - name: Restore
       run: dotnet restore
