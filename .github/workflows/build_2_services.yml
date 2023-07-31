@@ -52,10 +52,15 @@ jobs:
         format: YYYY-MM-DD HH:mm:ss
         utcOffset: "+00:00"
 
-    - name: remove nugets
+    - name: remove nugets myjetwallet
       run: dotnet nuget remove source myjetwallet
+      continue-on-error: true
+    - name: remove nugets nuget.org
+      run: dotnet nuget remove source nuget.org
+      continue-on-error: true
     - name: add nugets
       run: dotnet nuget add  source  --name myjetwallet https://nuget.pkg.github.com/myjetwallet/index.json
+      continue-on-error: true
     - name: list nugets
       run: dotnet nuget list source
     - name: Restore
