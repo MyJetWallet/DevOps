@@ -49,6 +49,7 @@ jobs:
 
     - name: remove nugets myjetwallet
       run: dotnet nuget remove source myjetwallet
+      continue-on-error: true
     - name: remove nugets nuget.org
       run: dotnet nuget remove source nuget.org
       continue-on-error: true
