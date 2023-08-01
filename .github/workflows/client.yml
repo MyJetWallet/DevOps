@@ -12,8 +12,6 @@ on:
     secrets:
       NUGET_TOCKEN:
         required: true
-      NUGET_AUTH_TOKEN:
-        required: true
 
 jobs:
   build:
@@ -30,7 +28,7 @@ jobs:
         dotnet-version: 7.0.*
         source-url: https://nuget.pkg.github.com/myjetwallet/index.json
       env:
-        NUGET_AUTH_TOKEN: ${{ secrets.NUGET_AUTH_TOKEN }}
+        NUGET_AUTH_TOKEN: ${{ secrets.NUGET_TOCKEN }}
 
 #    - name: remove nugets myjetwallet
 #      run: dotnet nuget remove source myjetwallet
@@ -56,7 +54,7 @@ jobs:
       run: dotnet pack --configuration Release src/${{ inputs.repository_name }}.Client /p:Version=${{ inputs.release_version }}
 
     - name: Publish the package to GPR
-      run: dotnet nuget push src/${{ inputs.repository_name }}.Client/bin/Release/*.nupkg -s "https://api.nuget.org/v3/index.json" -k ${{ secrets.NUGET_AUTH_TOKEN }}
+      run: dotnet nuget push src/${{ inputs.repository_name }}.Client/bin/Release/*.nupkg -s "https://api.nuget.org/v3/index.json" -k ${{ secrets.NUGET_TOCKEN }}
 
     - name: Publish the package to GitHub
       uses: MyJetWallet/nuget-publish-to-github-packages-action@v2.1
@@ -64,4 +62,4 @@ jobs:
         nupkg-path:  './src/${{ inputs.repository_name }}.Client/bin/Release/*.nupkg'
         repo-owner:  'myjetwallet'
         gh-user:  ${{ github.actor }}
-        token:  ${{ secrets.NUGET_AUTH_TOKEN }}
+        token:  ${{ secrets.GITHUB_TOKEN }}
