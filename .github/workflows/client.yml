@@ -26,9 +26,9 @@ jobs:
       uses: actions/setup-dotnet@v3
       with:
         dotnet-version: 7.0.*
-        source-url: https://nuget.pkg.github.com/myjetwallet/index.json
-      env:
-        NUGET_AUTH_TOKEN: ${{ secrets.NUGET_TOCKEN }}
+#         source-url: https://nuget.pkg.github.com/myjetwallet/index.json
+#       env:
+#         NUGET_AUTH_TOKEN: ${{ secrets.NUGET_TOCKEN }}
 
     - name: list nugets
       run: dotnet nuget list source
