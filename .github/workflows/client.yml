@@ -53,4 +53,4 @@ jobs:
         nupkg-path:  './src/${{ inputs.repository_name }}.Client/bin/Release/*.nupkg'
         repo-owner:  'myjetwallet'
         gh-user:  ${{ github.actor }}
-        token:  ${{ secrets.GITHUB_TOKEN }}
+        token:  ${{ secrets.NUGET_AUTH_TOKEN }}
