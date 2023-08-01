@@ -12,6 +12,8 @@ on:
     secrets:
       NUGET_TOCKEN:
         required: true
+      NUGET_AUTH_TOKEN:
+        required: true
 
 jobs:
   build:
@@ -26,9 +28,9 @@ jobs:
       uses: actions/setup-dotnet@v3
       with:
         dotnet-version: 7.0.*
-#         source-url: https://nuget.pkg.github.com/myjetwallet/index.json
-#       env:
-#         NUGET_AUTH_TOKEN: ${{secrets.GITHUB_TOKEN}}  
+        source-url: https://nuget.pkg.github.com/myjetwallet/index.json
+      env:
+        NUGET_AUTH_TOKEN: ${{secrets.NUGET_AUTH_TOKEN}}  
 
     - name: list nugets
       run: dotnet nuget list source
@@ -51,4 +53,4 @@ jobs:
         nupkg-path:  './src/${{ inputs.repository_name }}/bin/Release/*.nupkg'
         repo-owner:  'myjetwallet'
         gh-user:  ${{ github.actor }}
-        token:  ${{ secrets.GITHUB_TOKEN }}
+        token:  ${{ secrets.NUGET_AUTH_TOKEN }}
