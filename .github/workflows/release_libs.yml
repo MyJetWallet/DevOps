@@ -27,7 +27,9 @@ jobs:
     - name: Setup .NET Core
       uses: actions/setup-dotnet@v3
       with:
-        dotnet-version: 7.0.*
+        dotnet-version: |
+          7.0.*
+          8.0.*
         source-url: https://nuget.pkg.github.com/myjetwallet/index.json
       env:
         NUGET_AUTH_TOKEN: ${{secrets.NUGET_AUTH_TOKEN}}  
