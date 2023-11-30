@@ -1,89 +1,89 @@
-name: BUILD TEST
+# name: BUILD TEST
 
-on:
-  workflow_call:
-    inputs:
-      repository_name:
-        required: true
-        type: string
-      repository_type:
-        required: true
-        type: string
-      release_version:
-        required: true
-        type: string
-    secrets:
-      ST_DOCKER_USER:
-        required: true
-      ST_DOCKER_PASSWORD:
-        required: true
-      AZURE_CONTAINER_REGISTRY:
-        required: true
-      UAT_GIT_TOKEN:
-        required: true
-      KUBE_CONFIG_DATA__ST_TEST:
-        required: true
-      NUGET_AUTH_TOKEN:
-        required: true
+# on:
+#   workflow_call:
+#     inputs:
+#       repository_name:
+#         required: true
+#         type: string
+#       repository_type:
+#         required: true
+#         type: string
+#       release_version:
+#         required: true
+#         type: string
+#     secrets:
+#       ST_DOCKER_USER:
+#         required: true
+#       ST_DOCKER_PASSWORD:
+#         required: true
+#       AZURE_CONTAINER_REGISTRY:
+#         required: true
+#       UAT_GIT_TOKEN:
+#         required: true
+#       KUBE_CONFIG_DATA__ST_TEST:
+#         required: true
+#       NUGET_AUTH_TOKEN:
+#         required: true
 
-jobs:
-  build:
-    runs-on: self-hosted
-    env:
-      DOTNET_INSTALL_DIR: "/home/monfex"
+# jobs:
+#   build:
+#     runs-on: self-hosted
+#     env:
+#       DOTNET_INSTALL_DIR: "/home/monfex"
 
-    steps:
-    - uses: actions/checkout@v3
+#     steps:
+#     - uses: actions/checkout@v3
 
-    - name: Setup .NET Core
-      uses: actions/setup-dotnet@v3
-      with:
-        dotnet-version: |
-          7.0.*
-          8.0.*
-        source-url: https://nuget.pkg.github.com/myjetwallet/index.json
-      env:
-        NUGET_AUTH_TOKEN: ${{ secrets.NUGET_AUTH_TOKEN }}
+#     - name: Setup .NET Core
+#       uses: actions/setup-dotnet@v3
+#       with:
+#         dotnet-version: |
+#           7.0.*
+#           8.0.*
+#         source-url: https://nuget.pkg.github.com/myjetwallet/index.json
+#       env:
+#         NUGET_AUTH_TOKEN: ${{ secrets.NUGET_AUTH_TOKEN }}
 
-    - name: Get current time
-      uses: MyJetTools/get-current-time@v2
-      id: current-time
-      with:
-        format: YYYY-MM-DD HH:mm:ss
-        utcOffset: "+00:00"
+#     - name: Get current time
+#       uses: MyJetTools/get-current-time@v2
+#       id: current-time
+#       with:
+#         format: YYYY-MM-DD HH:mm:ss
+#         utcOffset: "+00:00"
 
-    - name: list nugets
-      run: dotnet nuget list source
+#     - name: list nugets
+#       run: dotnet nuget list source
       
-    - name: Restore
-      run: dotnet restore
-      continue-on-error: true
+#     - name: Restore
+#       run: dotnet restore
+#       continue-on-error: true
 
-    - name: Build microservice
-      run: dotnet build --no-restore --configuration Release /p:AssemblyVersion=${{ inputs.release_version }}
+#     - name: Build microservice
+#       run: dotnet build --no-restore --configuration Release /p:AssemblyVersion=${{ inputs.release_version }}
 
-    - name: Test microservice
-      run: dotnet test --no-build --configuration Release
+#     - name: Test microservice
+#       run: dotnet test --no-build --configuration Release
 
-    - name: Publish Service
-      run: dotnet publish ./src/*${{ inputs.repository_name }}/*${{ inputs.repository_name }}.csproj --configuration Release /p:AssemblyVersion=${{ inputs.release_version }} --output ./publish-api
+#     - name: Publish Service
+#       run: dotnet publish ./src/*${{ inputs.repository_name }}/*${{ inputs.repository_name }}.csproj --configuration Release /p:AssemblyVersion=${{ inputs.release_version }} --output ./publish-api
 
-    - name: Check Service dir
-      run: ls ./publish-api
+#     - name: Check Service dir
+#       run: ls ./publish-api
 
-    - id: string
-      uses: ASzc/change-string-case-action@v1
-      with:
-        string: ${{ inputs.repository_name }}
+#     - id: string
+#       uses: ASzc/change-string-case-action@v1
+#       with:
+#         string: ${{ inputs.repository_name }}
 
-    - name: Publish image azure
-      uses: docker/build-push-action@v1
-      with:
-        username: ${{ secrets.ST_DOCKER_USER }}
-        password: ${{ secrets.ST_DOCKER_PASSWORD }}
-        path: ./publish-api
-        registry: ${{ secrets.AZURE_CONTAINER_REGISTRY }}
-        repository: spot/myjetwallet.${{ steps.string.outputs.lowercase }}-test
-        tags: latest
-        add_git_labels: true
-        build_args: app_version=myjetwallet.${{ steps.string.outputs.lowercase }}-test:latest,app_compilation_date=${{ steps.current-time.outputs.formattedTime }}
+#     - name: Publish image azure
+#       uses: docker/build-push-action@v1
+#       with:
+#         username: ${{ secrets.ST_DOCKER_USER }}
+#         password: ${{ secrets.ST_DOCKER_PASSWORD }}
+#         path: ./publish-api
+#         registry: ${{ secrets.AZURE_CONTAINER_REGISTRY }}
+#         repository: spot/myjetwallet.${{ steps.string.outputs.lowercase }}-test
+#         tags: latest
+#         add_git_labels: true
+#         build_args: app_version=myjetwallet.${{ steps.string.outputs.lowercase }}-test:latest,app_compilation_date=${{ steps.current-time.outputs.formattedTime }}
