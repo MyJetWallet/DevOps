@@ -12,15 +12,15 @@ on:
       repository_name_third:
         required: true
         type: string
+      repository_name_fourth:
+        required: true
+        type: string  
       repository_output_second:
         required: true
         type: string
       repository_output_third:
         required: true
         type: string
-      repository_output_fourth:
-        required: true
-        type: string  
       repository_type:
         required: true
         type: string
