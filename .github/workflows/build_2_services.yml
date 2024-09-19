@@ -39,10 +39,13 @@ jobs:
     steps:
     - uses: actions/checkout@v3
 
+    - name: Set .NET root
+      run: echo "DOTNET_ROOT=/home/monfex" >> $GITHUB_ENV
+      
     - name: Setup .NET Core
       uses: actions/setup-dotnet@v3
       with:
-        dotnet-version: 7.0.*
+        dotnet-version: '8.0.x'
         source-url: https://nuget.pkg.github.com/myjetwallet/index.json
       env:
         NUGET_AUTH_TOKEN: ${{secrets.NUGET_AUTH_TOKEN}}
