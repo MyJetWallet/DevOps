@@ -33,6 +33,9 @@ jobs:
     steps:
     - uses: actions/checkout@v3
 
+    - name: Set .NET root
+      run: echo "DOTNET_ROOT=/home/monfex" >> $GITHUB_ENV
+      
     - name: Setup .NET Core
       uses: actions/setup-dotnet@v3
       with:
