@@ -83,7 +83,7 @@ jobs:
       run: ls ${{ inputs.repository_output_second }}
 
     - name: copy Dockerfile
-      run: cp ./publish-api/Dockerfile ./${{ inputs.repository_output_second }}/Dockerfile
+      run: cp ./src/${{ inputs.repository_name_second }}/Dockerfile ./${{ inputs.repository_output_second }}/Dockerfile
 
     - id: string
       uses: ASzc/change-string-case-action@v1
