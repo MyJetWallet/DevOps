@@ -50,13 +50,11 @@ jobs:
       run: dotnet pack --configuration Release src/${{ inputs.repository_name }} /p:Version=${{ inputs.release_version }}
 
     - name: Publish the package to GPR
-      run: dotnet nuget push src/${{ inputs.repository_name }}/bin/Release/*.nupkg -s "https://api.nuget.org/v3/index.json" -k ${{ secrets.NUGET_TOCKEN }}
-
+      run: dotnet nuget push src/${{ inputs.repository_name }}/bin/Release/*.nupkg --source "https://api.nuget.org/v3/index.json" --api-key ${{ secrets.NUGET_AUTH_TOKEN }} --skip-duplicate
     - name: Publish the package to GitHub
       run: dotnet nuget push src/${{ inputs.repository_name }}/bin/Release/*.nupkg --source "https://nuget.pkg.github.com/myjetwallet/index.json" --api-key ${{ secrets.NUGET_AUTH_TOKEN }} --skip-duplicate
 
 
-    # - name: Publish the package to GitHub
     #   uses: MyJetWallet/nuget-publish-to-github-packages-action@v2.1
     #   with:
     #     nupkg-path:  './src/${{ inputs.repository_name }}/bin/Release/*.nupkg'
