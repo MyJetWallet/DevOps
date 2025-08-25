@@ -77,7 +77,7 @@ jobs:
       run: dotnet test --no-build --configuration Release
 
     - name: Publish Service
-      run: dotnet publish ./src/*${{ inputs.repository_name }}/*${{ inputs.repository_name }}.csproj --configuration Release /p:AssemblyVersion=${{ inputs.release_version }} --output ./publish-api
+      run: dotnet publish ./src/*${{ inputs.repository_name }}/*${{ inputs.repository_name }}.csproj --configuration Release /p:AssemblyVersion=${{ inputs.release_version }} --output ./publish
 
     - name: Publish Service ${{ inputs.repository_name_second }}
       run: dotnet publish ./src/*${{ inputs.repository_name_second }}/*${{ inputs.repository_name_second }}.csproj --configuration Release /p:AssemblyVersion=${{ inputs.release_version }} --output ${{ inputs.repository_output_second }}
@@ -87,7 +87,7 @@ jobs:
 
 
     - name: Check Service dir
-      run: ls ./publish-api
+      run: ls ./publish
 
     - name: Check Service dir ${{ inputs.repository_name_second }}
       run: ls ${{ inputs.repository_output_second }}
@@ -115,7 +115,7 @@ jobs:
       with:
         username: ${{ secrets.ST_DOCKER_USER }}
         password: ${{ secrets.ST_DOCKER_PASSWORD }}
-        path: ./publish-api
+        path: ./publish
         registry: ${{ secrets.AZURE_CONTAINER_REGISTRY }}
         repository: spot/myjetwallet.${{ steps.string.outputs.lowercase }}
         tag_with_ref: true
