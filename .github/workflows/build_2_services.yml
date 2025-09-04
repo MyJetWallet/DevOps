@@ -143,7 +143,6 @@ jobs:
         find . -type f -name "*.*ml" -exec sed -i -r $reg {} \;
         git config user.name github-actions
         git config user.email github-actions@github.com
-        if git status | grep -q modified; then git commit -a -m "Update version of service myjetwallet.${{ steps.string.outputs.lowercase }}" && git push; fi
         pattern=myjetwallet.${{ steps.string_second.outputs.lowercase }}:.*$
         imagename=myjetwallet.${{ steps.string_second.outputs.lowercase }}:${{ inputs.release_version }}
         reg=$"s/${pattern}/${imagename}/g"
