@@ -30,65 +30,66 @@ on:
 jobs:
   build:
     runs-on: self-hosted
-
     steps:
-    - uses: actions/checkout@v3
+      - uses: actions/checkout@v3
 
-    - name: Get current time
-      uses: MyJetTools/get-current-time@v2
-      id: current-time
-      with:
-        format: YYYY-MM-DD HH:mm:ss
-        utcOffset: "+00:00"
+      - name: Get current time (ISO8601)
+        uses: MyJetTools/get-current-time@v2
+        id: current-time
+        with:
+          format: YYYY-MM-DDTHH:mm:ssZ
+          utcOffset: "+00:00"
 
-    - id: string
-      uses: ASzc/change-string-case-action@v1
-      with:
-        string: ${{ inputs.repository_name }}
+      - id: string
+        uses: ASzc/change-string-case-action@v1
+        with:
+          string: ${{ inputs.repository_name }}
 
-    - name: Log in to ACR
-      uses: docker/login-action@v3
-      with:
-        registry: ${{ secrets.AZURE_CONTAINER_REGISTRY }}
-        username: ${{ secrets.ST_DOCKER_USER }}
-        password: ${{ secrets.ST_DOCKER_PASSWORD }}
-    
-    - name: Build & Push
-      uses: docker/build-push-action@v6
-      with:
-        context: .
-        push: true
-        tags: |
-          ${{ secrets.AZURE_CONTAINER_REGISTRY }}/spot/myjetwallet.${{ steps.string.outputs.lowercase }}:${{ inputs.release_version }}
-        build-args: |
-          PYTHON_VERSION=${{ inputs.python_version }}
-          app_version=myjetwallet.${{ steps.string.outputs.lowercase }}:${{ inputs.release_version }}
-          app_compilation_date=${{ steps.current-time.outputs.formattedTime }}
+      - name: Log in to ACR
+        uses: docker/login-action@v3
+        with:
+          registry: ${{ secrets.AZURE_CONTAINER_REGISTRY }}
+          username: ${{ secrets.ST_DOCKER_USER }}
+          password: ${{ secrets.ST_DOCKER_PASSWORD }}
 
+      - name: Build & Push Docker image (ACR)
+        uses: docker/build-push-action@v6
+        with:
+          context: .
+          push: true
+          tags: |
+            ${{ secrets.AZURE_CONTAINER_REGISTRY }}/spot/myjetwallet.${{ steps.string.outputs.lowercase }}:${{ inputs.release_version }}
+          build-args: |
+            PYTHON_VERSION=${{ inputs.python_version }}
+            app_version=myjetwallet.${{ steps.string.outputs.lowercase }}:${{ inputs.release_version }}
+            app_compilation_date=${{ steps.current-time.outputs.formattedTime }}
 
   docker-deploy:
     needs: [build]
     runs-on: self-hosted
-
     steps:
-    - id: string
-      uses: ASzc/change-string-case-action@v1
-      with:
-        string: ${{ inputs.repository_name }}
+      - id: string
+        uses: ASzc/change-string-case-action@v1
+        with:
+          string: ${{ inputs.repository_name }}
 
-    - name: get uat docker yamls
-      uses: actions/checkout@v2
-      with:
-        repository: MyJetWallet/docker-infrastructure
-        ref: uat
-        token: ${{ secrets.UAT_GIT_TOKEN }}
+      - name: get uat docker yamls
+        uses: actions/checkout@v2
+        with:
+          repository: MyJetWallet/docker-infrastructure
+          ref: uat
+          token: ${{ secrets.UAT_GIT_TOKEN }}
 
-    - run: |
-        pattern=myjetwallet.${{ steps.string.outputs.lowercase }}:.*$
-        imagename=myjetwallet.${{ steps.string.outputs.lowercase }}:${{ inputs.release_version }}
-        reg=$"s/${pattern}/${imagename}/g"
-        echo $reg
-        find . -type f -name "*.*ml" -exec sed -i -r $reg {} \;
-        git config user.name github-actions
-        git config user.email github-actions@github.com
-        if git status | grep -q modified; then git commit -a -m "Update version of service myjetwallet.${{ steps.string.outputs.lowercase }}" && git push; fi
+      - name: Bump image tag in manifests
+        run: |
+          pattern=myjetwallet.${{ steps.string.outputs.lowercase }}:.*$
+          imagename=myjetwallet.${{ steps.string.outputs.lowercase }}:${{ inputs.release_version }}
+          reg=$"s/${pattern}/${imagename}/g"
+          echo "$reg"
+          find . -type f -name "*.*ml" -exec sed -i -r "$reg" {} \;
+          git config user.name github-actions
+          git config user.email github-actions@github.com
+          if git status | grep -q modified; then
+            git commit -a -m "Update version of service myjetwallet.${{ steps.string.outputs.lowercase }}"
+            git push
+          fi
