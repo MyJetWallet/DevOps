@@ -35,6 +35,60 @@ jobs:
     steps:
     - uses: actions/checkout@v3
 
+    - name: Update TargetFramework and Docker base image
+      run: |
+        python3 - << 'PY'
+        from pathlib import Path
+
+        ROOT = Path(".").resolve()
+
+        TF_OLD = "<TargetFramework>net8.0</TargetFramework>"
+        TF_NEW = "<TargetFramework>net10.0</TargetFramework>"
+
+        DOCKER_OLD = "mcr.microsoft.com/dotnet/aspnet:8.0-bookworm-slim"
+        DOCKER_NEW = "mcr.microsoft.com/dotnet/aspnet:10.0-noble"
+
+        SKIP_DIRS = {'.git', '.github', 'bin', 'obj', '.idea', '.vs'}
+
+        def should_skip(path: Path) -> bool:
+            return any(part in SKIP_DIRS for part in path.parts)
+
+        def update_file(path: Path, old: str, new: str) -> bool:
+            try:
+                text = path.read_text(encoding="utf-8")
+            except UnicodeDecodeError:
+                return False
+
+            if old not in text:
+                return False
+
+            new_text = text.replace(old, new)
+            if new_text == text:
+                return False
+
+            path.write_text(new_text, encoding="utf-8")
+            print(f"updated: {path}")
+            return True
+
+        tf_changed = 0
+        docker_changed = 0
+
+        for pattern in ("*.csproj", "*.fsproj", "*.vbproj"):
+            for path in ROOT.rglob(pattern):
+                if should_skip(path):
+                    continue
+                if update_file(path, TF_OLD, TF_NEW):
+                    tf_changed += 1
+
+        for path in ROOT.rglob("Dockerfile*"):
+            if should_skip(path):
+                continue
+            if update_file(path, DOCKER_OLD, DOCKER_NEW):
+                docker_changed += 1
+
+        print(f"Summary: project files updated = {tf_changed}, Dockerfiles updated = {docker_changed}")
+        PY
+
     - name: Set .NET root
       run: echo "DOTNET_ROOT=/home/monfex" >> $GITHUB_ENV
       
