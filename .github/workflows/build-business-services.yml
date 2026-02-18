@@ -87,7 +87,7 @@ jobs:
   # =========================================
   # K8S DEPLOY
   # =========================================
-  docker-deploy:
+  k8s-deploy:
     needs: build
     runs-on: self-hosted
 
@@ -95,7 +95,7 @@ jobs:
     - name: Checkout infra repo
       uses: actions/checkout@v3
       with:
-        repository: MyJetWallet/docker-infrastructure
+        repository: MyJetWallet/kubernates-infrastructure
         ref: uat
         token: ${{ secrets.UAT_GIT_TOKEN }}
 
