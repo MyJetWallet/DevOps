@@ -50,6 +50,16 @@ jobs:
         docker login ${{ secrets.AZURE_CONTAINER_REGISTRY }} \
         -u ${{ secrets.ST_DOCKER_USER }} --password-stdin
 
+    - id: lowercase_web
+      uses: ASzc/change-string-case-action@v1
+      with:
+        string: ${{ inputs.repository_name }}
+    
+    - id: lowercase_jobs
+      uses: ASzc/change-string-case-action@v1
+      with:
+        string: ${{ inputs.repository_name_second }}
+        
     # -------------------------
     # Build & Push WEB
     # -------------------------
@@ -60,7 +70,7 @@ jobs:
         file: ./src/${{ inputs.repository_name }}/Dockerfile
         push: true
         tags: |
-          ${{ secrets.AZURE_CONTAINER_REGISTRY }}/spot/myjetwallet.${{ inputs.repository_name }}:${{ inputs.release_version }}
+          ${{ secrets.AZURE_CONTAINER_REGISTRY }}/spot/myjetwallet.${{ steps.lowercase_web.outputs.lowercase }}:${{ inputs.release_version }}
 
     # -------------------------
     # Build & Push JOBS
@@ -72,7 +82,7 @@ jobs:
         file: ./src/${{ inputs.repository_name_second }}/Dockerfile
         push: true
         tags: |
-          ${{ secrets.AZURE_CONTAINER_REGISTRY }}/spot/myjetwallet.${{ inputs.repository_name_second }}:${{ inputs.release_version }}
+          ${{ secrets.AZURE_CONTAINER_REGISTRY }}/spot/myjetwallet.${{ steps.lowercase_jobs.outputs.lowercase }}:${{ inputs.release_version }}
 
   # =========================================
   # K8S DEPLOY
