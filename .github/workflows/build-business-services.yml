@@ -99,16 +99,26 @@ jobs:
         ref: uat
         token: ${{ secrets.UAT_GIT_TOKEN }}
 
+    - id: lowercase_web
+      uses: ASzc/change-string-case-action@v1
+      with:
+        string: ${{ inputs.repository_name }}
+    
+    - id: lowercase_jobs
+      uses: ASzc/change-string-case-action@v1
+      with:
+        string: ${{ inputs.repository_name_second }}
+    
     - name: Update Web image
       run: |
-        pattern=myjetwallet.${{ inputs.repository_name }}:.*$
-        imagename=myjetwallet.${{ inputs.repository_name }}:${{ inputs.release_version }}
+        pattern=myjetwallet.${{ steps.lowercase_web.outputs.lowercase }}:.*$
+        imagename=myjetwallet.${{ steps.lowercase_web.outputs.lowercase }}:${{ inputs.release_version }}
         sed -i -r "s/${pattern}/${imagename}/g" $(find . -type f -name "*.*ml")
 
     - name: Update Jobs image
       run: |
-        pattern=myjetwallet.${{ inputs.repository_name_second }}:.*$
-        imagename=myjetwallet.${{ inputs.repository_name_second }}:${{ inputs.release_version }}
+        pattern=myjetwallet.${{ steps.lowercase_jobs.outputs.lowercase }}:.*$
+        imagename=myjetwallet.${{ steps.lowercase_jobs.outputs.lowercase }}:${{ inputs.release_version }}
         sed -i -r "s/${pattern}/${imagename}/g" $(find . -type f -name "*.*ml")
 
     - name: Commit & Push
