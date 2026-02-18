@@ -1,0 +1,111 @@
+name: BUILD UAT
+
+on:
+  workflow_call:
+    inputs:
+      repository_name:
+        required: true
+        type: string
+      repository_name_second:
+        required: true
+        type: string
+      release_version:
+        required: true
+        type: string
+    secrets:
+      ST_DOCKER_USER:
+        required: true
+      ST_DOCKER_PASSWORD:
+        required: true
+      AZURE_CONTAINER_REGISTRY:
+        required: true
+      UAT_GIT_TOKEN:
+        required: true
+      NUGET_AUTH_TOKEN:
+        required: true
+
+jobs:
+  build:
+    runs-on: self-hosted
+
+    steps:
+    - uses: actions/checkout@v3
+
+    # -------------------------
+    # Validate version
+    # -------------------------
+    - name: Validate version (2.x.x only)
+      run: |
+        if [[ ! "${{ inputs.release_version }}" =~ ^2\.[0-9]+\.[0-9]+$ ]]; then
+          echo "Version must match 2.x.x"
+          exit 1
+        fi
+
+    # -------------------------
+    # Login to ACR
+    # -------------------------
+    - name: Login to Azure Container Registry
+      run: |
+        echo "${{ secrets.ST_DOCKER_PASSWORD }}" | \
+        docker login ${{ secrets.AZURE_CONTAINER_REGISTRY }} \
+        -u ${{ secrets.ST_DOCKER_USER }} --password-stdin
+
+    # -------------------------
+    # Build & Push WEB
+    # -------------------------
+    - name: Build & Push Web
+      uses: docker/build-push-action@v5
+      with:
+        context: .
+        file: ./src/${{ inputs.repository_name }}/Dockerfile
+        push: true
+        tags: |
+          ${{ secrets.AZURE_CONTAINER_REGISTRY }}/spot/myjetwallet.${{ inputs.repository_name }}:${{ inputs.release_version }}
+
+    # -------------------------
+    # Build & Push JOBS
+    # -------------------------
+    - name: Build & Push Jobs
+      uses: docker/build-push-action@v5
+      with:
+        context: .
+        file: ./src/${{ inputs.repository_name_second }}/Dockerfile
+        push: true
+        tags: |
+          ${{ secrets.AZURE_CONTAINER_REGISTRY }}/spot/myjetwallet.${{ inputs.repository_name_second }}:${{ inputs.release_version }}
+
+  # =========================================
+  # K8S DEPLOY
+  # =========================================
+  k8s-deploy:
+    needs: build
+    runs-on: self-hosted
+
+    steps:
+    - name: Checkout infra repo
+      uses: actions/checkout@v3
+      with:
+        repository: MyJetWallet/kubernates-infrastructure
+        ref: uat
+        token: ${{ secrets.UAT_GIT_TOKEN }}
+
+    - name: Update Web image
+      run: |
+        pattern=myjetwallet.${{ inputs.repository_name }}:.*$
+        imagename=myjetwallet.${{ inputs.repository_name }}:${{ inputs.release_version }}
+        sed -i -r "s/${pattern}/${imagename}/g" $(find . -type f -name "*.*ml")
+
+    - name: Update Jobs image
+      run: |
+        pattern=myjetwallet.${{ inputs.repository_name_second }}:.*$
+        imagename=myjetwallet.${{ inputs.repository_name_second }}:${{ inputs.release_version }}
+        sed -i -r "s/${pattern}/${imagename}/g" $(find . -type f -name "*.*ml")
+
+    - name: Commit & Push
+      run: |
+        git config user.name github-actions
+        git config user.email github-actions@github.com
+        if git status | grep -q modified; then
+          git commit -a -m "Update images to ${{ inputs.release_version }}"
+          git push
+        fi
