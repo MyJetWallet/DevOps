@@ -59,7 +59,12 @@ jobs:
       uses: ASzc/change-string-case-action@v1
       with:
         string: ${{ inputs.repository_name_second }}
-        
+
+    - name: Generate build timestamp
+      id: build_time
+      shell: bash
+      run: echo "ts=$(date -u +'%Y-%m-%dT%H:%M:%SZ')" >> "$GITHUB_OUTPUT"
+      
     # -------------------------
     # Build & Push WEB
     # -------------------------
@@ -72,7 +77,7 @@ jobs:
         build-args: |
           APP_VERSION=${{ inputs.release_version }}
           BUILD_GIT_HASH=${{ github.sha }}
-          BUILD_TIMESTAMP=${{ github.run_id }}
+          BUILD_TIMESTAMP=${{ steps.build_time.outputs.ts }}
         tags: |
           ${{ secrets.AZURE_CONTAINER_REGISTRY }}/spot/myjetwallet.${{ steps.lowercase_web.outputs.lowercase }}:${{ inputs.release_version }}
 
@@ -88,7 +93,7 @@ jobs:
         build-args: |
           APP_VERSION=${{ inputs.release_version }}
           BUILD_GIT_HASH=${{ github.sha }}
-          BUILD_TIMESTAMP=${{ github.run_id }}
+          BUILD_TIMESTAMP=${{ steps.build_time.outputs.ts }}
         tags: |
           ${{ secrets.AZURE_CONTAINER_REGISTRY }}/spot/myjetwallet.${{ steps.lowercase_jobs.outputs.lowercase }}:${{ inputs.release_version }}
 
