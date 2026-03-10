@@ -12,6 +12,9 @@ on:
       release_version:
         required: true
         type: string
+      repository_name_third:
+        required: true
+        type: string
     secrets:
       ST_DOCKER_USER:
         required: true
@@ -60,6 +63,11 @@ jobs:
       with:
         string: ${{ inputs.repository_name_second }}
 
+    - id: lowercase_webhooks
+      uses: ASzc/change-string-case-action@v1
+      with:
+        string: ${{ inputs.repository_name_third }}
+
     - name: Generate build timestamp
       id: build_time
       shell: bash
@@ -97,6 +105,22 @@ jobs:
         tags: |
           ${{ secrets.AZURE_CONTAINER_REGISTRY }}/spot/myjetwallet.${{ steps.lowercase_jobs.outputs.lowercase }}:${{ inputs.release_version }}
 
+    # -------------------------
+    # Build & Push WEBHOOKS
+    # -------------------------
+    - name: Build & Push WebHooks
+      uses: docker/build-push-action@v5
+      with:
+        context: .
+        file: ./src/${{ inputs.repository_name_third }}/Dockerfile
+        push: true
+        build-args: |
+          APP_VERSION=${{ inputs.release_version }}
+          BUILD_GIT_HASH=${{ github.sha }}
+          BUILD_TIMESTAMP=${{ steps.build_time.outputs.ts }}
+        tags: |
+          ${{ secrets.AZURE_CONTAINER_REGISTRY }}/spot/myjetwallet.${{ steps.lowercase_webhooks.outputs.lowercase }}:${{ inputs.release_version }}
+
   # =========================================
   # K8S DEPLOY
   # =========================================
@@ -121,6 +145,11 @@ jobs:
       uses: ASzc/change-string-case-action@v1
       with:
         string: ${{ inputs.repository_name_second }}
+
+    - id: lowercase_webhooks
+      uses: ASzc/change-string-case-action@v1
+      with:
+        string: ${{ inputs.repository_name_third }}
     
     - name: Update Web image
       run: |
@@ -132,6 +161,12 @@ jobs:
       run: |
         pattern=myjetwallet.${{ steps.lowercase_jobs.outputs.lowercase }}:.*$
         imagename=myjetwallet.${{ steps.lowercase_jobs.outputs.lowercase }}:${{ inputs.release_version }}
+        sed -i -r "s/${pattern}/${imagename}/g" $(find . -type f -name "*.*ml")
+
+    - name: Update WebHooks image
+      run: |
+        pattern=myjetwallet.${{ steps.lowercase_webhooks.outputs.lowercase }}:.*$
+        imagename=myjetwallet.${{ steps.lowercase_webhooks.outputs.lowercase }}:${{ inputs.release_version }}
         sed -i -r "s/${pattern}/${imagename}/g" $(find . -type f -name "*.*ml")
 
     - name: Commit & Push
