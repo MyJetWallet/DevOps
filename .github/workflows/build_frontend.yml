@@ -1,0 +1,85 @@
+name: BUILD Frontend UAT
+
+on:
+  workflow_call:
+    inputs:
+      repository_name:
+        required: true
+        type: string
+      frontend_path:
+        required: true
+        type: string
+      release_version:
+        required: true
+        type: string
+    secrets:
+      ST_DOCKER_USER:
+        required: true
+      ST_DOCKER_PASSWORD:
+        required: true
+      AZURE_CONTAINER_REGISTRY:
+        required: true
+      UAT_GIT_TOKEN:
+        required: true
+
+jobs:
+  build:
+    runs-on: self-hosted
+
+    steps:
+    - uses: actions/checkout@v3
+
+    - id: string
+      uses: ASzc/change-string-case-action@v1
+      with:
+        string: ${{ inputs.repository_name }}
+
+    - name: Login to Azure Container Registry
+      run: |
+        echo "${{ secrets.ST_DOCKER_PASSWORD }}" | \
+        docker login ${{ secrets.AZURE_CONTAINER_REGISTRY }} \
+        -u ${{ secrets.ST_DOCKER_USER }} --password-stdin
+
+    - name: Build & Push Frontend
+      uses: docker/build-push-action@v5
+      with:
+        context: ${{ inputs.frontend_path }}
+        push: true
+        build-args: |
+          GITHUB_VERSION=${{ inputs.release_version }}
+        tags: ${{ secrets.AZURE_CONTAINER_REGISTRY }}/spot/myjetwallet.${{ steps.string.outputs.lowercase }}:${{ inputs.release_version }}
+
+  # =========================================
+  # K8S DEPLOY
+  # =========================================
+  k8s-deploy:
+    needs: [build]
+    runs-on: self-hosted
+
+    steps:
+    - id: string
+      uses: ASzc/change-string-case-action@v1
+      with:
+        string: ${{ inputs.repository_name }}
+
+    - name: Checkout kubernates-infrastructure
+      uses: actions/checkout@v3
+      with:
+        repository: MyJetWallet/kubernates-infrastructure
+        ref: uat
+        token: ${{ secrets.UAT_GIT_TOKEN }}
+
+    - name: Update frontend image
+      run: |
+        pattern=myjetwallet.${{ steps.string.outputs.lowercase }}:.*$
+        imagename=myjetwallet.${{ steps.string.outputs.lowercase }}:${{ inputs.release_version }}
+        sed -i -r "s/${pattern}/${imagename}/g" $(find . -type f -name "*.*ml")
+
+    - name: Commit & Push
+      run: |
+        git config user.name github-actions
+        git config user.email github-actions@github.com
+        if git status | grep -q modified; then
+          git commit -a -m "Update ${{ inputs.repository_name }} to ${{ inputs.release_version }}"
+          git push
+        fi
