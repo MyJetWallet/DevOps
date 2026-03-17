@@ -21,6 +21,8 @@ on:
         required: true
       UAT_GIT_TOKEN:
         required: true
+      VITE_GOOGLE_CLIENT_ID:
+        required: false
 
 jobs:
   build:
@@ -47,6 +49,7 @@ jobs:
         push: true
         build-args: |
           GITHUB_VERSION=${{ inputs.release_version }}
+          VITE_GOOGLE_CLIENT_ID=${{ secrets.VITE_GOOGLE_CLIENT_ID }}
         tags: ${{ secrets.AZURE_CONTAINER_REGISTRY }}/spot/myjetwallet.${{ steps.string.outputs.lowercase }}:${{ inputs.release_version }}
 
   # =========================================
