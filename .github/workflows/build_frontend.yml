@@ -23,6 +23,8 @@ on:
         required: true
       VITE_GOOGLE_CLIENT_ID:
         required: false
+      VITE_TELEGRAM_BOT_USERNAME:
+        required: false
 
 jobs:
   build:
@@ -50,6 +52,7 @@ jobs:
         build-args: |
           GITHUB_VERSION=${{ inputs.release_version }}
           VITE_GOOGLE_CLIENT_ID=${{ secrets.VITE_GOOGLE_CLIENT_ID }}
+          VITE_TELEGRAM_BOT_USERNAME=${{ secrets.VITE_TELEGRAM_BOT_USERNAME }}
         tags: ${{ secrets.AZURE_CONTAINER_REGISTRY }}/spot/myjetwallet.${{ steps.string.outputs.lowercase }}:${{ inputs.release_version }}
 
   # =========================================
